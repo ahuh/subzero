@@ -28,7 +28,7 @@ import org.subzero.core.bean.ProcessReport;
 import org.subzero.core.helper.PropertiesHelper;
 
 /**
- * SubZero SysTray
+ * SubZero SysTray class
  * @author Julien
  *
  */
@@ -133,30 +133,9 @@ public class SubZeroSysTray {
 	}
 		
     /**
-     * Main
-     * @param args
+     * Start
      */
-    public static void main(String[] args) {
-    	// Initialize logger configuration
-    	PropertiesHelper.configureLogger();
-    	
-    	// Prevent several instances of same program
-    	try
-        {
-            @SuppressWarnings("unused")
-			SubZeroLock lock = new SubZeroLock();
-        }
-        catch(RuntimeException e)
-        {
-            // Exit main app
-        	log.debug("Program is already running : abort new program execution");
-            return;
-        }
-        catch (Exception e)
-        {
-        	log.error("Error with the lock process", e);
-        }        
-    	
+    public static void start() {
     	log.debug("SubZero - Start");
     	
         /* Use an appropriate Look and Feel */

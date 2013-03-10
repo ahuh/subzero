@@ -4,7 +4,8 @@
 	<parent>
 		<groupId>org.subzero</groupId>
 		<artifactId>subzero-app</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0</version>
+		<relativePath>../subzero-app/pom.xml</relativePath>
 	</parent>
 	<artifactId>subzero-tool</artifactId>
 	<name>subzero-tool</name>
@@ -12,7 +13,7 @@
 		<dependency>
 			<groupId>org.subzero</groupId>
 			<artifactId>subzero-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 </project>

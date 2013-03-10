@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.subzero</groupId>
 	<artifactId>subzero-app</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>subzero-app</name>
 	<build>
@@ -25,7 +25,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.subzero.tool.SubZeroSysTray</mainClass>
+							<mainClass>org.subzero.tool.SubZeroStart</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 						<manifestEntries>
@@ -58,7 +58,7 @@
 							<outputDirectory>${project.build.directory}</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${project.basedir}/../src/main/resources-external</directory>
+									<directory>${project.basedir}/../subzero-app/src/main/resources-external</directory>
 								</resource>
 							</resources>
 						</configuration>
@@ -68,8 +68,8 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>subzero-core</module>
-		<module>subzero-tool</module>
+		<module>../subzero-core</module>
+		<module>../subzero-tool</module>
 	</modules>
 	<dependencies>
 		<dependency>
