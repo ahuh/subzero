@@ -1,10 +1,6 @@
 package org.subzero.tool;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-
 import org.apache.log4j.Logger;
-import org.subzero.core.bean.ProcessReport;
 import org.subzero.core.helper.PropertiesHelper;
 
 /**
@@ -41,7 +37,7 @@ public class SubZeroDaemon {
 					// Process is not running : launch it and lock the running flag
 					processIsRunning = true;
 					try {
-						ProcessReport report = SubZeroProcessLauncher.launchProcess();
+						SubZeroProcessLauncher.launchProcess();
 					}
 					catch (Exception e) {
 						log.error("Error while processing video files", e);

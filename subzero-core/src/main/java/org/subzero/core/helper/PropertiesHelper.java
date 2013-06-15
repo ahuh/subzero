@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -214,12 +215,22 @@ public class PropertiesHelper {
      * @return
      * @throws Exception
      */
-    public static String getMkvMergeMoveMkvMergeCommandLine(String outputFilePath, String language, String subFilePath, String inputVideoFilePath) throws Exception {
-    	return getPropertyValue("plugin.mkvmergemove.mkvmerge.commandline")
-    			.replace("{outputFilePath}", outputFilePath)
-		    	.replace("{language}", language)
-		    	.replace("{subFilePath}", subFilePath)
-		    	.replace("{inputVideoFilePath}", inputVideoFilePath);
+    public static ArrayList<String> getMkvMergeMoveMkvMergeCommandLine(String outputFilePath, String language, String subFilePath, String inputVideoFilePath) throws Exception {    	
+    	ArrayList<String> argTab = new ArrayList<String>();
+    	for (int i = 0; i<100; i++) {
+    		String propVal = getPropertyValue("plugin.mkvmergemove.mkvmerge.commandline." + i);
+    		if (propVal == null) {
+    			break;
+    		}
+    		else {
+    			argTab.add(propVal.replace("{outputFilePath}", outputFilePath)
+    			    	.replace("{language}", language)
+    			    	.replace("{subFilePath}", subFilePath)
+    			    	.replace("{inputVideoFilePath}", inputVideoFilePath));
+    		}
+    	}
+    	
+    	return argTab;
     }    
     
     /**

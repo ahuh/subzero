@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.subzero</groupId>
 		<artifactId>subzero-app</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<relativePath>../subzero-app/pom.xml</relativePath>
 	</parent>
 	<artifactId>subzero-core</artifactId>

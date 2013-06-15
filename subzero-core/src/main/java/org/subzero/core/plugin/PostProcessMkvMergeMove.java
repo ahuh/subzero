@@ -50,8 +50,8 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
 			
 			// Execute MKVMerge command line
 			log.debug("Executing MKVMerge and logging output :");
-            Runtime runtime = Runtime.getRuntime();
-            Process process = runtime.exec(PropertiesHelper.getMkvMergeMoveMkvMergeCommandLine(outputFilePath, language, subFilePath, inputVideoFilePath));
+			ProcessBuilder processBuilder = new ProcessBuilder(PropertiesHelper.getMkvMergeMoveMkvMergeCommandLine(outputFilePath, language, subFilePath, inputVideoFilePath));
+            Process process = processBuilder.start();
             
             BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line=null;
