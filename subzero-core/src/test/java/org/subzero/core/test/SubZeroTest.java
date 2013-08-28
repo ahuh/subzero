@@ -82,7 +82,8 @@ public class SubZeroTest {
 	{
 		String[] tests = {	"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
-							"Smash.S02E01E02.HDTV.x264-LOL.mp4"
+							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
 		};
 		
 		for (String test : tests)
@@ -111,7 +112,8 @@ public class SubZeroTest {
 		String[] tests = {	"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
-							"Smash.S02E01E02.HDTV.x264-LOL.mp4"
+							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
 		};
 		
 		for (String test : tests)
@@ -141,7 +143,8 @@ public class SubZeroTest {
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.5x14.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
-							"White.Coller.S02E26.mkv"
+							"White.Coller.S02E26.mkv",
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
 		};
 		
 		for (String test : tests)

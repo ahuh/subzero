@@ -13,7 +13,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.subzero.core.bean.SubSearchResult;
 import org.subzero.core.bean.SubTitleInfo;
-import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.FileHelper;
 import org.subzero.core.helper.PropertiesHelper;
 import org.subzero.core.helper.TvShowInfoHelper;
@@ -79,8 +78,9 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 			// 1 - Search Page
 			
 			// Connect to search page & search the episode
-			log.debug(String.format("Search for episode '%s' (page 1) ...", episode));
+			log.debug(String.format("Search for episode '%s' (page 1) ...", episode));			
 			String searchUrl = getSearchUrl(1);
+			log.debug(String.format("> Search URL : %s", searchUrl));
 			Document docSearch = Jsoup.connect(searchUrl)
 					.timeout(QUERY_TIME_OUT)
 					.get();
@@ -91,10 +91,10 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 			if (aResultPage != null) {
 				// At least 2 result pages available
 				String resultUrl = aResultPage.attr("href");
-				for (String urlPart : resultUrl.split("&"))
+				for (String urlPart : resultUrl.split("//"))
 				{
-					// Get the URL part "&page=X" to extract last page number
-					String pagePart = "page=";
+					// Get the URL part "//page/X" to extract last page number
+					String pagePart = "page/";
 					if (urlPart.toLowerCase().startsWith(pagePart)) {
 						lastPageNumber = Integer.parseInt(urlPart.toLowerCase().replace(pagePart, ""));
 						break;
@@ -115,6 +115,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 					// Connect to next result page
 					log.debug(String.format("Search for episode '%s' (page %s) ...", episode, i));
 					String searchUrlNext = getSearchUrl(i);
+					log.debug(String.format("> Search URL : %s", searchUrlNext));
 					docSearch = Jsoup.connect(searchUrlNext)
 							.timeout(QUERY_TIME_OUT)
 							.header("Referer", searchUrl)
@@ -156,50 +157,29 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 						continue;
 					}
 					
-					Element spanDescription = trResult.select("div[class=list_div2] span[class=release]").first();
+					Element spanTitle = trResult.select("div[class=list_div2]").first();
+					
 					String episodeRelease = "";
-					if (spanDescription != null) {
-						boolean resultMatch = false;
-						String concatDescription = "";
+					if (spanTitle != null) {
 						
-						// Iterate through lines of description
-						String description = spanDescription.attr("html_title");
-						for (String descriptionLine : description.split("<br/>"))
-						{							
-							// Analyze description line as TV Show Info
-							TvShowInfo aEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(descriptionLine);
-							
-							// Check if the result text : 
-							// - starts with the desired serie name
-							// - has the season search 
-							// - has at least one episode search 
-							// => select the first one matching only
-							if (aEpisodeInfo != null
-									&& SubLeecherHelper.looseMatchStartsWith(aEpisodeInfo.getSerie(), this.tvShowInfo.getSerie())
-									&& aEpisodeInfo.getSeason() == this.tvShowInfo.getSeason()
-									&& TvShowInfoHelper.testIfOneEpisodeMatches(this.tvShowInfo.getEpisodes(), aEpisodeInfo.getEpisodes()))
-							{
-								resultMatch = true;
-								
-								// Concatenate description with ";" separator (for log only)
-								if (!concatDescription.equals("")) concatDescription += ";";
-								concatDescription += descriptionLine;
-								
-								// Concatenate release groups with ";" separator
-								String releaseGroup = aEpisodeInfo.getReleaseGroup();
-								if (releaseGroup != null && !releaseGroup.equals("")) {
-									if (!episodeRelease.equals("")) episodeRelease += ";";
-									episodeRelease += releaseGroup;
-								}
-							}
-						}						
+						boolean resultMatch = false;
+						String concatTitle = spanTitle.text();
+						
+						// Check if the result text : 
+						// - starts with the desired serie name
+						// => select the first one matching only
+						if (concatTitle != ""
+								&& SubLeecherHelper.looseMatchStartsWith(concatTitle, this.tvShowInfo.getSerie()))
+						{
+							resultMatch = true;
+						}					
 						
 						if (resultMatch) {
-							log.debug(String.format("> Matching result found : '%s'", concatDescription));
+							log.debug(String.format("> Matching result found : '%s'", concatTitle));
 						}
 						else {
 							// No TV Show matching found => next line
-							log.debug(String.format("> Non matching result : '%s'", description));
+							log.debug(String.format("> Non matching result : '%s'", concatTitle));
 							continue;
 						}					
 					}
