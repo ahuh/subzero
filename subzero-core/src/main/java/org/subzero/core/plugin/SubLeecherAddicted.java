@@ -1,9 +1,14 @@
 package org.subzero.core.plugin;
 
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,8 +35,9 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 	private static Logger log = Logger.getLogger(SubLeecherAddicted.class);
 	
 	// Constants
-	private static String ADDIC7ED_URL = "http://www.addic7ed.com";
-	private static int QUERY_TIME_OUT = 30000;
+	private static final String ADDIC7ED_URL = "http://www.addic7ed.com";
+	private static final int QUERY_TIME_OUT = 30000;
+	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
 	
 	/**
 	 * Extract the number of download from the search results description
@@ -209,23 +215,27 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 				String downloadUrl = scoredSub.getUrl();
 				log.debug(String.format("Try to download subtitle at URL '%s' ...", downloadUrl));
 				
-				//TODO:à supprimer, pour debut only (on veut pas bloquer addicted !!!)
-				/*if ("aaa".equals("aaa")) {
-					String subFileName = TvShowInfoHelper.prepareSubtitleFileName(this.tvShowInfo, this.subLanguage);
-					log.info(String.format("> SubLeecher Addicted - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
-							this.tvShowInfo.getInputVideoFileName(), 
-							this.subLanguage, 
-							subFileName));
-					return new SubTitleInfo("hihihi", this.subLanguage);
-				}*/
-				
-				byte[] bytes = Jsoup.connect(downloadUrl)
-						.timeout(QUERY_TIME_OUT)
-						.header("Referer", episodeUrl)
-						.ignoreContentType(true)
-						.execute()
-						.bodyAsBytes();			
-				String content = new String(bytes);
+				byte[] bytes = null;
+				String content = "";				
+				try {
+					bytes = Jsoup.connect(downloadUrl)
+							.timeout(QUERY_TIME_OUT)
+							.header("Referer", episodeUrl)
+							.ignoreContentType(true)
+							.execute()
+							.bodyAsBytes();			
+					content = new String(bytes);
+				}
+				catch (IllegalCharsetNameException ex) {
+					// Charset not detect : try to force download with charset UTF-8
+					log.debug(String.format("> Charset not detect : try to force download with charset '%s' ...", ALT_DOWNLOAD_CHARSET));
+					URL url = new URL(downloadUrl);
+					URLConnection connection = url.openConnection();
+					connection.setRequestProperty("Referer", episodeUrl);				
+					InputStream stream = connection.getInputStream();
+					bytes = IOUtils.toByteArray(stream);
+					content = new String(bytes, ALT_DOWNLOAD_CHARSET);
+				}
 
 				if (content.toLowerCase().contains("<html xmlns=\"http://www.w3.org/1999/xhtml\">".toLowerCase())
 						|| content.toLowerCase().contains("Addic7ed.com - Sorry, download limit exceeded".toLowerCase()))

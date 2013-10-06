@@ -1,9 +1,14 @@
 package org.subzero.core.plugin;
 
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -32,8 +37,9 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 	private static Logger log = Logger.getLogger(SubLeecherTVSubtitles.class);
 	
 	// Constants
-	private static String TVSUBTITLES_URL = "http://www.tvsubtitles.net";
-	private static int QUERY_TIME_OUT = 30000;
+	private static final String TVSUBTITLES_URL = "http://www.tvsubtitles.net";
+	private static final int QUERY_TIME_OUT = 30000;
+	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
 	
 	/**
 	 * Remove years part from the serie name
@@ -294,12 +300,24 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 				// Connection to download page
 				log.debug(String.format("Try to download subtitle at URL '%s' ...", downloadUrl));
 
-				byte[] bytes = Jsoup.connect(downloadUrl)
-						.timeout(QUERY_TIME_OUT)
-						.header("Referer", subtitleUrl)
-						.ignoreContentType(true)
-						.execute()
-						.bodyAsBytes();
+				byte[] bytes = null;				
+				try {
+					bytes = Jsoup.connect(downloadUrl)
+							.timeout(QUERY_TIME_OUT)
+							.header("Referer", subtitleUrl)
+							.ignoreContentType(true)
+							.execute()
+							.bodyAsBytes();			
+				}
+				catch (IllegalCharsetNameException ex) {
+					// Charset not detect : try to force download with charset UTF-8
+					log.debug(String.format("> Charset not detect : try to force download with charset '%s' ...", ALT_DOWNLOAD_CHARSET));
+					URL url = new URL(downloadUrl);
+					URLConnection connection = url.openConnection();
+					connection.setRequestProperty("Referer", subtitleUrl);				
+					InputStream stream = connection.getInputStream();
+					bytes = IOUtils.toByteArray(stream);
+				}
 						
 				// Save zipped subtitle file to working folder
 				String zippedSubFileName = TvShowInfoHelper.prepareZippedSubtitleFileName(this.tvShowInfo, this.subLanguage);				

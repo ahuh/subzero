@@ -1,7 +1,9 @@
 SubZero
 =======
 Watches your TV show video files... and adds subtitle
-by ahuh (2013)
+by ahuh
+v1.0.3
+2013-10-06
 
 
 What is it ?

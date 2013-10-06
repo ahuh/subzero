@@ -26,6 +26,7 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.subzero.core.bean.ProcessReport;
 import org.subzero.core.helper.PropertiesHelper;
+import org.subzero.core.version.VersionConstants;
 
 /**
  * SubZero SysTray class
@@ -38,8 +39,8 @@ public class SubZeroSysTray {
 	 * Constants
 	 */
 	private static String SUBZERO_POPUP_NAME = "SubZero";
-	private static String SUBZERO_POPUP_DESCRIPTION = "SubZero - Watches your TV show video files... and adds subtitle.";
-	private static String SUBZERO_POPUP_ABOUT = "SubZero - Watches your TV show video files... and adds subtitle - by ahuh (2013)";
+	private static String SUBZERO_POPUP_DESCRIPTION = "SubZero %s - Watches your TV show video files... and adds subtitle";
+	private static String SUBZERO_POPUP_ABOUT = "SubZero\n  Watches your TV show video files... and adds subtitle\n    by ahuh\n      %s - %s";
 	
 	/**
 	 * Logger
@@ -272,7 +273,7 @@ public class SubZeroSysTray {
         }
         
         // Set tool tip message
-        trayIcon.setToolTip(SUBZERO_POPUP_DESCRIPTION);
+        trayIcon.setToolTip(String.format(SUBZERO_POPUP_DESCRIPTION, VersionConstants.SUBZERO_VERSION_NUMBER));
 
         // Events capture :
         
@@ -404,7 +405,7 @@ public class SubZeroSysTray {
         // About
         aboutMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	JOptionPane.showMessageDialog(null, SUBZERO_POPUP_ABOUT);                
+            	JOptionPane.showMessageDialog(null, String.format(SUBZERO_POPUP_ABOUT, VersionConstants.SUBZERO_VERSION_NUMBER, VersionConstants.SUBZERO_VERSION_DATE));                
             }
         });
         

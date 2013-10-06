@@ -29,7 +29,7 @@ public class SubZeroTest {
 	{
 		// Initialize logger configuration
 		PropertiesHelper.configureLogger();
-		
+
 		try {
 			testRegEx();
 			
@@ -80,10 +80,12 @@ public class SubZeroTest {
 	
 	private static void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
+		String[] tests = {	"the.big.bang.theory.S07E03.mkv",
+							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
 							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
+				
 		};
 		
 		for (String test : tests)
