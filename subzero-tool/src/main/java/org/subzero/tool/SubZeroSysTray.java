@@ -41,6 +41,10 @@ public class SubZeroSysTray {
 	private static String SUBZERO_POPUP_NAME = "SubZero";
 	private static String SUBZERO_POPUP_DESCRIPTION = "SubZero %s - Watches your TV show video files... and adds subtitle";
 	private static String SUBZERO_POPUP_ABOUT = "SubZero\n  Watches your TV show video files... and adds subtitle\n    by ahuh\n      %s - %s";
+	private static String SUBZERO_POPUP_PREFIX_PAUSED = "[PAUSED] ";
+	private static String SUBZERO_ICON_PATH = "/images/subzero.png";
+	private static String SUBZERO_ICON_WORKING_PATH = "/images/subzero_working.png";
+	private static String SUBZERO_ICON_PAUSED_PATH = "/images/subzero_paused.png";
 	
 	/**
 	 * Logger
@@ -54,6 +58,11 @@ public class SubZeroSysTray {
     private static PopupMenu popup;
     private static TrayIcon trayIcon;
     private static SystemTray tray;
+    private static boolean paused = false;
+    private static Timer timer;
+    private static MenuItem launchNowMenuItem;
+    private static MenuItem pauseMenuItem;
+    private static MenuItem resumeMenuItem;
         
     /**
      * Launch SubZero process safely in a new thread
@@ -64,7 +73,7 @@ public class SubZeroSysTray {
 		
 		// Declare new thread
 		Thread thread = new Thread(new Runnable()
-		{	
+		{
 			// Run in new thread
 			public void run() {
 				if (processIsRunning) {
@@ -78,7 +87,7 @@ public class SubZeroSysTray {
 						if (paramStartAndEndMessage) {
 							trayIcon.displayMessage(SUBZERO_POPUP_NAME, "Launching process ...", TrayIcon.MessageType.INFO);
 						}
-						trayIcon.setImage(getImage("/images/subzero_working.png"));
+						trayIcon.setImage(getImage(SUBZERO_ICON_WORKING_PATH));
 						ProcessReport report = SubZeroProcessLauncher.launchProcess();
 						if (report == null) {
 							// No Report
@@ -123,7 +132,7 @@ public class SubZeroSysTray {
 					finally
 					{
 						processIsRunning = false;
-						trayIcon.setImage(getImage("/images/subzero.png"));
+						trayIcon.setImage(getImage(SUBZERO_ICON_PATH));
 					}
 				}
 			}
@@ -221,6 +230,58 @@ public class SubZeroSysTray {
     }
     
     /**
+     * Switch pause mode
+     * @param pauseMode
+     */
+    private static void switchPauseMode(boolean pauseMode) {
+    	if (processIsRunning) {
+    		// Process in running : do nothing
+    		return;
+    	}
+    	    	
+    	// Switch pause flag and relaunch automatic job
+		paused = pauseMode;    		
+		launchAutomaticJob(false);
+		
+    	// Switch icon
+    	if (pauseMode) {
+    		trayIcon.setImage(getImage(SUBZERO_ICON_PAUSED_PATH));
+    	}
+    	else {
+    		trayIcon.setImage(getImage(SUBZERO_ICON_PATH));
+    	}
+		
+    	// Prepare tooltip message
+    	String message = String.format(SUBZERO_POPUP_DESCRIPTION, VersionConstants.SUBZERO_VERSION_NUMBER);
+        if (pauseMode) {
+        	message = SUBZERO_POPUP_PREFIX_PAUSED + message;
+        }
+        
+        // Set tool tip message
+        trayIcon.setToolTip(message);
+        
+        // Switch pause / resume menu item (and remove "Launch Now !" while in pause)        
+        if (pauseMode) {
+        	popup.remove(0);
+        	popup.remove(0);
+        	popup.insert(resumeMenuItem, 0);
+        }
+        else {
+        	popup.remove(0);
+        	popup.insert(launchNowMenuItem, 0);
+        	popup.insert(pauseMenuItem, 1);
+        }
+        
+        // Popup
+        if (pauseMode) {
+        	trayIcon.displayMessage(SUBZERO_POPUP_NAME, "Going to sleep...", TrayIcon.MessageType.INFO);
+        }
+        else {
+        	trayIcon.displayMessage(SUBZERO_POPUP_NAME, "I'm awake !", TrayIcon.MessageType.INFO);
+        }
+    }
+    
+    /**
      * Create and show GUI
      */
     private static void createAndShowGUI() {
@@ -232,11 +293,13 @@ public class SubZeroSysTray {
         
         // Initialize UI components 
         popup = new PopupMenu();
-        trayIcon = new TrayIcon(getImage("/images/subzero.png"));
+        trayIcon = new TrayIcon(getImage(SUBZERO_ICON_PATH));
         tray = SystemTray.getSystemTray();
         
         // Create a popup menu components
-        MenuItem launchNowMenuItem = new MenuItem("Launch now !");
+        launchNowMenuItem = new MenuItem("Launch now !");
+        pauseMenuItem = new MenuItem("Pause");
+        resumeMenuItem = new MenuItem("Resume");
         MenuItem openWorkingFolderMenuItem = new MenuItem("Open Working folder");
         MenuItem openReportLogMenuItem = new MenuItem("Open Report Log");
         MenuItem openTechLogMenuItem = new MenuItem("Open Tech Log");
@@ -248,6 +311,7 @@ public class SubZeroSysTray {
         
         // Add components to popup menu
         popup.add(launchNowMenuItem);
+        popup.add(pauseMenuItem);
         popup.addSeparator();
         popup.add(openWorkingFolderMenuItem);
         popup.addSeparator();
@@ -283,7 +347,14 @@ public class SubZeroSysTray {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() >= 2){
-					launchSubZeroProcessSafely(true);
+					if (paused) {
+						// Resume
+						switchPauseMode(false);
+					}
+					else {
+						// Launch Now
+						launchSubZeroProcessSafely(true);
+					}
 	            }
 			}
 
@@ -308,7 +379,30 @@ public class SubZeroSysTray {
         // Launch now
         launchNowMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-				launchSubZeroProcessSafely(true);
+				if (paused) {
+					// Resume
+					switchPauseMode(false);
+				}
+				else {
+					// Launch Now
+					launchSubZeroProcessSafely(true);
+				}
+            }
+        });
+        
+        // ===========================
+        // Pause
+        pauseMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+				switchPauseMode(true);
+            }
+        });
+        
+        // ===========================
+        // Resume
+        resumeMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	switchPauseMode(false);
             }
         });
         
@@ -438,23 +532,45 @@ public class SubZeroSysTray {
         
         // ===========================
         // Automatic Job
-        int initDelay = 0;
-        int frequency = 0;
-        try {
-        	initDelay = PropertiesHelper.getAutomaticProcessInitDelay();
-        	frequency = PropertiesHelper.getAutomaticProcessFrequency();
-        } catch (Exception e) {
-        	log.error("Error while trying to get properties in configuration file", e);
-            return;
-        }        
-        Timer timer = new Timer(frequency, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	// No starting display message in job mode (only result message)
-				launchSubZeroProcessSafely(false);
-            }
-        });
-        timer.setInitialDelay(initDelay);
-        timer.setRepeats(true);
-        timer.start();
+        launchAutomaticJob(true);
+    }
+    
+    /**
+     * Launch Automatic job
+     * @param firstLaunch : if false, disable initDelay
+     */
+    private static void launchAutomaticJob(boolean firstLaunch) {
+    	if (paused) {
+    		// Pause mode : stop job if running
+	    	if (timer != null && timer.isRunning()) {
+	        	timer.stop();
+	        }
+    	}
+    	else {
+    		// Not in pause mode : start job if not started
+    		if (timer == null || !timer.isRunning()) {
+	    		int initDelay = 0;
+	            int frequency = 0;
+	            try {
+	            	initDelay = PropertiesHelper.getAutomaticProcessInitDelay();
+	            	frequency = PropertiesHelper.getAutomaticProcessFrequency();
+	            } catch (Exception e) {
+	            	log.error("Error while trying to get properties in configuration file", e);
+	                return;
+	            }        
+	            timer = new Timer(frequency, new ActionListener() {
+	                public void actionPerformed(ActionEvent e) {
+	                	// No starting display message in job mode (only result message)
+	    				launchSubZeroProcessSafely(false);
+	                }
+	            });
+	            if (firstLaunch) {
+	            	// Do not enable initDelay if already launched before (for instance, after a "pause-resume" event)
+	            	timer.setInitialDelay(initDelay);
+	            }
+	            timer.setRepeats(true);
+	            timer.start();
+    		}
+    	}
     }
 }

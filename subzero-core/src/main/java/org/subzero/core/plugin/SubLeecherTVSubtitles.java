@@ -37,27 +37,10 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 	private static Logger log = Logger.getLogger(SubLeecherTVSubtitles.class);
 	
 	// Constants
+	private static final String SITE_NAME = "TVSubtitles";
 	private static final String TVSUBTITLES_URL = "http://www.tvsubtitles.net";
 	private static final int QUERY_TIME_OUT = 30000;
 	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
-	
-	/**
-	 * Remove years part from the serie name
-	 * @param serieName Example : House M.D. (2004-2013)
-	 * @return Example : House M.D.
-	 */
-	private String removeYearsFromSerieName(String serieName) {
-		if (serieName == null || serieName.equals("")) {
-			return null;
-		}
-		int pos = serieName.lastIndexOf("(");
-		if (pos == -1) {
-			return serieName.trim();
-		}
-		else {
-			return serieName.substring(0, pos).trim();
-		}
-	}
 	
 	/**
 	 * Get the serie page URL with season
@@ -88,7 +71,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 	{
 		try
 		{
-			log.debug(String.format("SubLeecher TVSubtitles - Start - File='%s' ; Language='%s'", this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
+			log.debug(String.format("SubLeecher %s - Start - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 			
 			String episode = TvShowInfoHelper.getShortNameTypeX(this.tvShowInfo);
 			String serie = this.tvShowInfo.getSerie();
@@ -108,7 +91,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			for (Element aSerie : docSearch.select("div[class=left_articles] > ul > li a"))
 			{
 				String aText = aSerie.text(); 
-				String aSerieCleaned = removeYearsFromSerieName(aText);			
+				String aSerieCleaned = TvShowInfoHelper.removeYearsFromSerieName(aText);
 				
 				// Check if the result text : 
 				// - starts with the desired serie name
@@ -170,7 +153,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 				
 				// Try to analyse the episode title to extract info. Ex : 8x03
 				String tdEpisodeText = tdEpisode.text();
-				TvShowInfo tdEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(this.tvShowInfo.getSerie() + " " + tdEpisodeText);
+				TvShowInfo tdEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(this.tvShowInfo.getSerie() + " " + tdEpisodeText, true);
 				
 				// Check if the result text : 
 				// - has the season search 
@@ -210,20 +193,16 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			List<SubSearchResult> subSearchResults = new ArrayList<SubSearchResult>();			
 			for (Element aSubtitle : aSubtitleList)
 			{
-				// Get the last div before this link (contains language description)
-				Element divLanguage = aSubtitle.previousElementSibling();
-				while (divLanguage != null) {
-					if (divLanguage.tag().getName().toLowerCase().equals("div")) {
-						break;
-					}
-					divLanguage = divLanguage.previousElementSibling();
-				}
+				// Get the flag image (corresponding to the language) 
+				Element imgFlag = aSubtitle.select("img[src^=images/flags/]").first();
 				
-				String divLanguageText = divLanguage.text();
-				if (!SubLeecherHelper.looseMatchContains(divLanguageText, this.subLanguage)) {
+				// Check if the image has the right language image
+				// example : src=images/flags/fr.gif
+				if (imgFlag == null ||
+						!imgFlag.attr("src").toLowerCase().startsWith("images/flags/" + this.subLanguage.toLowerCase().substring(0,2))) {
 					// Language mismatch => next line
 					continue;
-				}
+				}		
 				
 				// Get the subtitle URL
 				String subtitleUrl = TVSUBTITLES_URL + aSubtitle.attr("href");
@@ -242,7 +221,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 					episodeNbDownload = Integer.parseInt(pDownloads.text());
 				}
 				
-				subSearchResults.add(new SubSearchResult(subtitleUrl, divLanguageText, episodeNbDownload, episodeRelease));
+				subSearchResults.add(new SubSearchResult(subtitleUrl, this.subLanguage, episodeNbDownload, episodeRelease));
 			}
 			
 			// Evaluate the matching score and sort the subtitle results !
@@ -339,7 +318,8 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 				List<String> extraFileNames = new ArrayList<String>();
 				extraFileNames.add(zippedSubFileName);
 				
-				log.info(String.format("> SubLeecher Addicted - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
+				log.info(String.format("> SubLeecher %s - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
+						SITE_NAME,
 						this.tvShowInfo.getInputVideoFileName(), 
 						this.subLanguage, 
 						subFileName));
@@ -352,12 +332,12 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 		}
 		catch (Exception e)
 		{
-			log.error("Error while trying to sub-leech files with TVSubtitles", e);
+			log.error("Error while trying to sub-leech files with " + SITE_NAME, e);
             return null;
 		}
 		finally
 		{
-			log.debug(String.format("SubLeecher TVSubtitles - End - File='%s' ; Language='%s'", this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
+			log.debug(String.format("SubLeecher %s - End - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 		}
 	}
 }

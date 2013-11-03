@@ -1,5 +1,6 @@
 package org.subzero.core.helper;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -118,16 +119,29 @@ public class TvShowInfoHelper {
 	}
 	
 	/**
+	 * Test if at least one episode matches between the two episodes lists
+	 * @param episodesToSearch
+	 * @param episodeInResult
+	 * @return
+	 */
+	public static boolean testIfOneEpisodeMatches(List<Integer> episodesToSearch, Integer episodeInResult) {
+		List<Integer> episodesInResult = new ArrayList<Integer>();
+		episodesInResult.add(episodeInResult);
+		return testIfOneEpisodeMatches(episodesToSearch, episodesInResult);
+	}
+	
+	/**
 	 * Populate structured TV Show Info for a type
 	 * @param value
 	 * @param cleanedValue
 	 * @param patternType
 	 * @param episodeSeparatorType
-	 * @param isFile if true, retrieve and test file extension (must be video) 
+	 * @param isFile if true, retrieve and test file extension (must be video)
+	 * @param removeYearFromSerieName 
 	 * @return
 	 * @throws Exception 
 	 */
-	private static TvShowInfo populateTvShowInfoForType(String value, String cleanedValue, String patternType, String episodeSeparatorType, boolean isFile) throws Exception
+	private static TvShowInfo populateTvShowInfoForType(String value, String cleanedValue, String patternType, String episodeSeparatorType, boolean isFile, boolean removeYearFromSerieName) throws Exception
 	{
 		Pattern ps = Pattern.compile(patternType, 2);
 
@@ -136,7 +150,12 @@ public class TvShowInfoHelper {
 	    {
 	    	TvShowInfo tvShowInfo = new TvShowInfo();
 	    	
-	    	tvShowInfo.setSerie(TvShowInfoHelper.cleanInputNamingPart(ms.group(1)));
+	    	String stSerie = TvShowInfoHelper.cleanInputNamingPart(ms.group(1));
+	    	if (removeYearFromSerieName) {
+	    		stSerie = removeYearsFromSerieName(stSerie);
+	    	}
+	    	tvShowInfo.setSerie(stSerie);
+	    	
 	    	tvShowInfo.setSeason(Integer.parseInt(TvShowInfoHelper.cleanInputNamingPart(ms.group(2))));
 	    	
 	    	List<Integer> episodes = new ArrayList<Integer>();
@@ -229,10 +248,11 @@ public class TvShowInfoHelper {
 	 * Populate structured TV Show Info from input value
 	 * @param value
 	 * @param isFile if true, retrieve and test file extension (must be video) 
+	 * @param removeYearFromSerieName
 	 * @return
 	 * @throws Exception 
 	 */
-	private static TvShowInfo populateTvShowInfo(String value, boolean isFile) throws Exception
+	private static TvShowInfo populateTvShowInfo(String value, boolean isFile, boolean removeYearFromSerieName) throws Exception
 	{
 		String cleanedValue = TvShowInfoHelper.cleanFromNoiseStrings(value);
 		
@@ -241,7 +261,7 @@ public class TvShowInfoHelper {
 		if (isFile) {
 			patternS += TvShowInfoHelper.PATTERN_EXT;
 		}
-		TvShowInfo tvShowInfo = populateTvShowInfoForType(value, cleanedValue, patternS, TvShowInfoHelper.EPISODE_SEPARATOR_S_TYPE, isFile);
+		TvShowInfo tvShowInfo = populateTvShowInfoForType(value, cleanedValue, patternS, TvShowInfoHelper.EPISODE_SEPARATOR_S_TYPE, isFile, removeYearFromSerieName);
 		if (tvShowInfo != null)
 		{
 			return tvShowInfo;
@@ -252,7 +272,7 @@ public class TvShowInfoHelper {
 		if (isFile) {
 			patternX += TvShowInfoHelper.PATTERN_EXT;
 		}
-		tvShowInfo = populateTvShowInfoForType(value, cleanedValue, patternX, TvShowInfoHelper.EPISODE_SEPARATOR_X_TYPE, isFile);
+		tvShowInfo = populateTvShowInfoForType(value, cleanedValue, patternX, TvShowInfoHelper.EPISODE_SEPARATOR_X_TYPE, isFile, removeYearFromSerieName);
 		if (tvShowInfo != null)
 		{
 			return tvShowInfo;
@@ -263,30 +283,32 @@ public class TvShowInfoHelper {
 		if (isFile) {
 			patternN += TvShowInfoHelper.PATTERN_EXT;
 		}
-		tvShowInfo = populateTvShowInfoForType(value, cleanedValue, patternN, null, isFile);
+		tvShowInfo = populateTvShowInfoForType(value, cleanedValue, patternN, null, isFile, removeYearFromSerieName);
 		return tvShowInfo;
 	}
 	
 	/**
 	 * Populate structured TV Show Info from input video file name
 	 * @param inputVideoFileName
+	 * @param removeYearFromSerieName
 	 * @return
 	 * @throws Exception 
 	 */
-	public static TvShowInfo populateTvShowInfo(String inputVideoFileName) throws Exception
+	public static TvShowInfo populateTvShowInfo(String inputVideoFileName, boolean removeYearFromSerieName) throws Exception
 	{
-		return populateTvShowInfo(inputVideoFileName, true);
+		return populateTvShowInfo(inputVideoFileName, true, removeYearFromSerieName);
 	}
 	
 	/**
 	 * Populate structured TV Show Info from free-text
 	 * @param freeText
+	 * @param removeYearFromSerieName
 	 * @return
 	 * @throws Exception 
 	 */
-	public static TvShowInfo populateTvShowInfoFromFreeText(String freeText) throws Exception
+	public static TvShowInfo populateTvShowInfoFromFreeText(String freeText, boolean removeYearFromSerieName) throws Exception
 	{
-		return populateTvShowInfo(freeText, false);
+		return populateTvShowInfo(freeText, false, removeYearFromSerieName);
 	}
 	
 	/**
@@ -413,5 +435,24 @@ public class TvShowInfoHelper {
 		sb.append(TvShowInfoHelper.OUTPUT_SEPARATOR);
 		sb.append(tvShowInfo.getFileType());
 		return sb.toString();
+	}
+	
+	
+	/**
+	 * Remove years part from the serie name
+	 * @param serieName Example : House M.D. (2004-2013)
+	 * @return Example : House M.D.
+	 */
+	public static String removeYearsFromSerieName(String serieName) {
+		if (serieName == null || serieName.equals("")) {
+			return null;
+		}
+		int pos = serieName.lastIndexOf("(");
+		if (pos == -1) {
+			return serieName.trim();
+		}
+		else {
+			return serieName.substring(0, pos).trim();
+		}
 	}
 }

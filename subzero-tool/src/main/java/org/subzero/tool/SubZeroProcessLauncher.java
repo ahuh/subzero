@@ -46,7 +46,7 @@ public class SubZeroProcessLauncher {
 			for (String inputVideoFileName : fileList)
 			{
 				// Populate TV Show Info from video file
-				TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(inputVideoFileName);
+				TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(inputVideoFileName, true);
 				
 				// Initialize SubLeecher Bus and check if a subtitle file exists in working folder
 				SubLeecherBus subLeecherBus = new SubLeecherBus(tvShowInfo);

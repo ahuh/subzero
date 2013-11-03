@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.subzero.core.bean.SubSearchResult;
 import org.subzero.core.bean.SubTitleInfo;
+import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.FileHelper;
 import org.subzero.core.helper.PropertiesHelper;
 import org.subzero.core.helper.TvShowInfoHelper;
@@ -37,6 +38,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 	private static Logger log = Logger.getLogger(SubLeecherPodnapisi.class);
 	
 	// Constants
+	private static final String SITE_NAME = "Podnapisi";
 	private static final String PODNAPISI_URL = "http://www.podnapisi.net";
 	private static final int QUERY_TIME_OUT = 30000;
 	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
@@ -65,7 +67,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 	{
 		try
 		{
-			log.debug(String.format("SubLeecher Podnapisi - Start - File='%s' ; Language='%s'", this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
+			log.debug(String.format("SubLeecher %s - Start - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 			
 			// Language ID mapping for specified language (REQUIRED)
 			int languageId = -1;
@@ -165,7 +167,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 					
 					Element spanTitle = trResult.select("div[class=list_div2]").first();
 					
-					String episodeRelease = "";
+					
 					if (spanTitle != null) {
 						
 						boolean resultMatch = false;
@@ -192,6 +194,16 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 					else {
 						// No description present => next line
 						continue;
+					}
+					
+					// Get the episode Release (OPTIONAL)
+					String episodeRelease = "";
+					Element spanRelease = spanTitle.select("span[class=release]").first();
+					if (spanRelease != null) {
+						TvShowInfo releaseEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(spanRelease.text(), true);
+						if (releaseEpisodeInfo != null) {
+							episodeRelease = releaseEpisodeInfo.getReleaseGroup();
+						}
 					}
 															
 					Element tdDownloads = trResult.select("td:eq(3)").first();
@@ -281,7 +293,8 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 				List<String> extraFileNames = new ArrayList<String>();
 				extraFileNames.add(zippedSubFileName);
 				
-				log.info(String.format("> SubLeecher Addicted - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
+				log.info(String.format("> SubLeecher %s - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
+						SITE_NAME,
 						this.tvShowInfo.getInputVideoFileName(), 
 						this.subLanguage, 
 						subFileName));
@@ -294,12 +307,12 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 		}
 		catch (Exception e)
 		{
-			log.error("Error while trying to sub-leech files with Podnapisi", e);
+			log.error("Error while trying to sub-leech files with " + SITE_NAME, e);
             return null;
 		}
 		finally
 		{
-			log.debug(String.format("SubLeecher Podnapisi - End - File='%s' ; Language='%s'", this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
+			log.debug(String.format("SubLeecher %s - End - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 		}
 	}
 }

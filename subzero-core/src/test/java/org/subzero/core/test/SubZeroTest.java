@@ -9,6 +9,7 @@ import org.subzero.core.helper.FileHelper;
 import org.subzero.core.helper.PropertiesHelper;
 import org.subzero.core.helper.TvShowInfoHelper;
 import org.subzero.core.plugin.SubLeecherAddicted;
+import org.subzero.core.plugin.SubLeecherOpenSubtitles;
 import org.subzero.core.plugin.SubLeecherPodnapisi;
 import org.subzero.core.plugin.SubLeecherTVSubtitles;
 import org.subzero.core.postprocess.PostProcessLauncher;
@@ -33,11 +34,13 @@ public class SubZeroTest {
 		try {
 			testRegEx();
 			
-			testSubLeecherTVSubtitles();
-			
 			testSubLeecherAddicted();
 			
+			testSubLeecherTVSubtitles();
+			
 			testSubLeecherPodnapisi();
+			
+			testSubLeecherOpenSubtitles();
 			
 			testFullProcess();
 		}
@@ -52,8 +55,8 @@ public class SubZeroTest {
 		for (String inputVideoFileName : FileHelper.getWorkingVideoFiles())
 		{
 			log.debug("inputVideoFileName=" + inputVideoFileName);
-			
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(inputVideoFileName);
+						
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(inputVideoFileName, true);
 					
 			SubLeecherBus subLeecherBus = new SubLeecherBus(tvShowInfo);
 			SubTitleInfo subTitleInfo = subLeecherBus.checkExistingSubFile();				
@@ -80,17 +83,17 @@ public class SubZeroTest {
 	
 	private static void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"the.big.bang.theory.S07E03.mkv",
+		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
+							"the.big.bang.theory.S07E03.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
-							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
-				
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"				
 		};
 		
 		for (String test : tests)
 		{
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test);			
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
 		
 			// 1 - Search subtitles for each language in property
 			for (String language : PropertiesHelper.getSubLeecherLanguages())
@@ -111,7 +114,8 @@ public class SubZeroTest {
 	
 	private static void testSubLeecherTVSubtitles() throws Exception
 	{
-		String[] tests = {	"Smash.1x06.mkv",
+		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
+							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
@@ -120,7 +124,7 @@ public class SubZeroTest {
 		
 		for (String test : tests)
 		{
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test);			
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
 		
 			// 1 - Search subtitles for each language in property
 			for (String language : PropertiesHelper.getSubLeecherLanguages())
@@ -141,7 +145,8 @@ public class SubZeroTest {
 	
 	private static void testSubLeecherPodnapisi() throws Exception
 	{
-		String[] tests = {	"Smash.1x06.mkv",
+		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
+							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.5x14.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
@@ -151,7 +156,7 @@ public class SubZeroTest {
 		
 		for (String test : tests)
 		{
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test);			
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
 		
 			// 1 - Search subtitles for each language in property
 			for (String language : PropertiesHelper.getSubLeecherLanguages())
@@ -170,6 +175,32 @@ public class SubZeroTest {
 		}
 	}
 	
+	private static void testSubLeecherOpenSubtitles() throws Exception
+	{
+		String[] tests = {	"the.vampire.diaries.S05E05.hdtv-lol.mkv",
+							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv"
+		};
+		
+		for (String test : tests)
+		{
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
+		
+			// 1 - Search subtitles for each language in property
+			for (String language : PropertiesHelper.getSubLeecherLanguages())
+			{
+				SubLeecherOpenSubtitles subLeecher = new SubLeecherOpenSubtitles();
+
+				subLeecher.initialize(tvShowInfo, language, PropertiesHelper.getSubLeecherReleaseGroupRequired());
+
+				SubTitleInfo subTitleInfo = subLeecher.leechSub();
+				if (subTitleInfo != null)
+				{
+					// Subtitles found !
+					log.debug("SUBTITLE FOUUUUUUUUUUUUUUUUUUUUUND !");
+				}
+			}
+		}
+	}
 	
 	
 	private static void testRegEx() throws Exception
@@ -205,7 +236,7 @@ public class SubZeroTest {
 
 		for (String test : tests)
 		{
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test);
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);
 			if (tvShowInfo == null) {
 				log.debug(String.format("No TvShowInfo > input==%s", test));
 			}

@@ -53,7 +53,7 @@ public class FileHelper {
 				Path filePath = file.toPath();
 				String fileName = filePath.getFileName().toString();
 				
-				TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(fileName);
+				TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(fileName, true);
 				if (tvShowInfo != null) {
 					videoFileNameList.add(fileName);
 				}

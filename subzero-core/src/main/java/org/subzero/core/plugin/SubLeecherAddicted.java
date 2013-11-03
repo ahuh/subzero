@@ -35,6 +35,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 	private static Logger log = Logger.getLogger(SubLeecherAddicted.class);
 	
 	// Constants
+	private static final String SITE_NAME = "Addicted";
 	private static final String ADDIC7ED_URL = "http://www.addic7ed.com";
 	private static final int QUERY_TIME_OUT = 30000;
 	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
@@ -73,7 +74,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 	{
 		try
 		{
-			log.debug(String.format("SubLeecher Addicted - Start - File='%s' ; Language='%s'", this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
+			log.debug(String.format("SubLeecher %s - Start - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 			
 			String episode = TvShowInfoHelper.getShortNameTypeX(this.tvShowInfo);
 
@@ -92,7 +93,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			for (Element aEpisode : docSearch.select("a[href^=serie/]"))
 			{
 				String aText = aEpisode.text();
-				TvShowInfo aEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(aText);
+				TvShowInfo aEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(aText, true);
 				
 				// Check if the result text : 
 				// - starts with the desired serie name
@@ -181,11 +182,18 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 				
 				// Get the episode Release (OPTIONAL)
 				// => in first line of the table
+				// => example : Version FoV, 387.00 MBs
 				Element tdRelease = aDownloadMatch.parent().parent().parent().select("td[class=NewsTitle]").first();
 				String episodeRelease = "";
 				if (tdRelease != null) {
 					// Remove prefix "Version " before group name
 					episodeRelease = tdRelease.text().replace("Version ", "");
+					
+					// Remove all characters after "," (size)
+					int commaPosRelease = episodeRelease.indexOf(",");
+					if (commaPosRelease > -1) {
+						episodeRelease = episodeRelease.substring(0, commaPosRelease);
+					}
 				}
 				
 				// Get the description (contains number of download) (OPTIONAL)
@@ -252,7 +260,8 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 				fos.write(bytes);
 				fos.close();
 
-				log.info(String.format("> SubLeecher Addicted - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
+				log.info(String.format("> SubLeecher %s - Subtitle found : Video File='%s' ; Language='%s' ; Subtitle File='%s'", 
+						SITE_NAME,
 						this.tvShowInfo.getInputVideoFileName(), 
 						this.subLanguage, 
 						subFileName));
@@ -265,12 +274,12 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 		}
 		catch (Exception e)
 		{
-			log.error("Error while trying to sub-leech files with Addicted", e);
+			log.error("Error while trying to sub-leech files with " + SITE_NAME, e);
             return null;
 		}
 		finally
 		{
-			log.debug(String.format("SubLeecher Addicted - End - File='%s' ; Language='%s'", this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
+			log.debug(String.format("SubLeecher %s - End - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 		}
 	}
 }
