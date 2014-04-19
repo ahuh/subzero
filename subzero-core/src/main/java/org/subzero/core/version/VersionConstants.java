@@ -10,10 +10,10 @@ public class VersionConstants {
 	/**
 	 * Version number
 	 */
-	public static final String SUBZERO_VERSION_NUMBER = "v1.0.4";
+	public static final String SUBZERO_VERSION_NUMBER = "v1.0.5";
 	
 	/**
 	 * Version date
 	 */
-	public static final String SUBZERO_VERSION_DATE = "2013-11-03";
+	public static final String SUBZERO_VERSION_DATE = "2014-04-19";
 }
