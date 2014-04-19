@@ -1,8 +1,10 @@
 package org.subzero.core.test;
 
-import java.io.IOException;
+import static org.junit.Assert.*;
 
 import org.apache.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.FileHelper;
@@ -22,35 +24,15 @@ public class SubZeroTest {
 	 */
 	private static Logger log = Logger.getLogger(SubZeroTest.class);
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args)
+	@Before
+	public void init()
 	{
 		// Initialize logger configuration
 		PropertiesHelper.configureLogger();
-
-		try {
-			testRegEx();
-			
-			testSubLeecherAddicted();
-			
-			testSubLeecherTVSubtitles();
-			
-			testSubLeecherPodnapisi();
-			
-			testSubLeecherOpenSubtitles();
-			
-			testFullProcess();
-		}
-		catch (Exception e)
-		{
-			log.error("Error in test", e);
-		}
 	}
 	
-	private static void testFullProcess() throws Exception
+	//@Test
+	public void testFullProcess() throws Exception
 	{
 		for (String inputVideoFileName : FileHelper.getWorkingVideoFiles())
 		{
@@ -61,10 +43,11 @@ public class SubZeroTest {
 			SubLeecherBus subLeecherBus = new SubLeecherBus(tvShowInfo);
 			SubTitleInfo subTitleInfo = subLeecherBus.checkExistingSubFile();				
 			if (subTitleInfo == null) {
-				subTitleInfo = subLeecherBus.launchBus();
+				subTitleInfo = subLeecherBus.launchBus();				
 				if (subTitleInfo != null) {
 					log.debug("subLeecherBusFound=" + subTitleInfo.getSubFileName() + ";" + subTitleInfo.getLanguage());
 				}
+				assertNotNull(subTitleInfo);
 			}
 			else {
 				log.debug("subFileAlreadyExists=" + subTitleInfo.getSubFileName() + ";" + subTitleInfo.getLanguage());
@@ -76,19 +59,21 @@ public class SubZeroTest {
 				if (ppResult) {
 					log.debug("ok!");
 				}
+				assertTrue(ppResult);
 			}
-		}
-		
+		}		
 	}
-	
-	private static void testSubLeecherAddicted() throws Exception
+
+	//@Test
+	public void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
+		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"the.big.bang.theory.S07E03.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
-							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"				
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"		
 		};
 		
 		for (String test : tests)
@@ -108,13 +93,16 @@ public class SubZeroTest {
 					// Subtitles found !
 					log.debug("SUBTITLE FOUUUUUUUUUUUUUUUUUUUUUND !");
 				}
+				assertNotNull(subTitleInfo);
 			}
 		}
 	}
 	
-	private static void testSubLeecherTVSubtitles() throws Exception
+	//@Test
+	public void testSubLeecherTVSubtitles() throws Exception
 	{
-		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
+		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
@@ -139,13 +127,16 @@ public class SubZeroTest {
 					// Subtitles found !
 					log.debug("SUBTITLE FOUUUUUUUUUUUUUUUUUUUUUND !");
 				}
+				assertNotNull(subTitleInfo);
 			}
 		}
 	}
 	
-	private static void testSubLeecherPodnapisi() throws Exception
+	//@Test
+	public void testSubLeecherPodnapisi() throws Exception
 	{
-		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
+		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.5x14.Hoo.Yeah-LOL.mkv",
@@ -175,9 +166,10 @@ public class SubZeroTest {
 		}
 	}
 	
-	private static void testSubLeecherOpenSubtitles() throws Exception
+	//@Test
+	public void testSubLeecherOpenSubtitles() throws Exception
 	{
-		String[] tests = {	"the.vampire.diaries.S05E05.hdtv-lol.mkv",
+		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv"
 		};
 		
@@ -202,15 +194,14 @@ public class SubZeroTest {
 		}
 	}
 	
-	
-	private static void testRegEx() throws Exception
+	@Test
+	public void testRegEx() throws Exception
 	{
-		String[] tests = {	"Alfred Hitchcock Presents (1955) - 03x23 - The Right Kind of House",
-							"Bleak House (2005) - 01x15 - Series 1, Episode 15",
+		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV-x264-LOL.nzb.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-SiCKBEARD.mkv",				
-							"The.Mentalist.S01E15.Red.John.Comes.Back.JPISUBFR.srt",
+							"The.Mentalist.S01E15.Red.John.Comes.Back.JPISUBFR.srt.mp4",
 							"The.Mentalist.115.mkv",
 							"The.Mentalist.11516.mkv",
 							"The.Mentalist.1151617.Red.John.Comes.Back.TV.x264-LOL.mkv",
@@ -237,6 +228,7 @@ public class SubZeroTest {
 		for (String test : tests)
 		{
 			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);
+			assertNotNull(tvShowInfo);
 			if (tvShowInfo == null) {
 				log.debug(String.format("No TvShowInfo > input==%s", test));
 			}
@@ -265,6 +257,13 @@ public class SubZeroTest {
 				String fileName = TvShowInfoHelper.prepareSubtitleFileName(tvShowInfo, "French", "srt");			
 				log.debug(String.format("PrepareSubtitleFileName > %s",
 						fileName));
+				
+				assertNotNull(tvShowInfo.getSerie());
+				assertNotNull(tvShowInfo.getSeason());
+				assertNotNull(ep);
+				assertNotEquals(tvShowInfo.getSerie(), "");
+				assertNotEquals(tvShowInfo.getSeason(), "");
+				assertNotEquals(ep, "");
 			}
 		}
 	}

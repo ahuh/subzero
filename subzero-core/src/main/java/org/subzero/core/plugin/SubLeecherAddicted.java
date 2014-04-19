@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -83,55 +84,74 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			
 			// Connect to search page & search the episode
 			log.debug(String.format("Search for episode '%s' ...", episode));
-			String searchUrl = ADDIC7ED_URL + "/search.php?search=" + episode;
-			Document docSearch = Jsoup.connect(searchUrl)
+			String searchUrl = ADDIC7ED_URL + "/search.php?search=" + episode;			
+			Response respSearch = Jsoup.connect(searchUrl)
 					.timeout(QUERY_TIME_OUT)
-					.get();
+					.execute();
+					//.get();
 			
-			// Iterative through search results
-			Element aEpisodeMatch = null;
-			for (Element aEpisode : docSearch.select("a[href^=serie/]"))
-			{
-				String aText = aEpisode.text();
-				TvShowInfo aEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(aText, true);
+			Document docSearch = null;
+			Document docEpisode = null;
+			String episodeUrl = null;
+			
+			String respSearchUrl = respSearch.url().toString();			
+			if (respSearchUrl.contains("/search.php")) {
+				// Search result page
 				
-				// Check if the result text : 
-				// - starts with the desired serie name
-				// - has the season search 
-				// - has at least one episode search 
-				// => select the first one matching only
-				if (aEpisodeInfo != null
-						&& SubLeecherHelper.looseMatchStartsWith(aEpisodeInfo.getSerie(), this.tvShowInfo.getSerie())
-						&& aEpisodeInfo.getSeason() == this.tvShowInfo.getSeason()
-						&& TvShowInfoHelper.testIfOneEpisodeMatches(this.tvShowInfo.getEpisodes(), aEpisodeInfo.getEpisodes()))
-				{					
-					log.debug(String.format("> Matching result found : '%s'", aText));
-					aEpisodeMatch = aEpisode;
-					break;
-				}
-				else {
-					log.debug(String.format("> Non matching result : '%s'", aText));
-				}
-			}
+				docSearch = respSearch.parse();				
 			
-			if (aEpisodeMatch == null) {
-				// No episode found => end
-				log.debug("> No match in result !");
-				return null;
+				// Iterative through search results
+				Element aEpisodeMatch = null;
+				for (Element aEpisode : docSearch.select("a[href^=serie/]"))
+				{
+					String aText = aEpisode.text();
+					TvShowInfo aEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(aText, true);
+					
+					// Check if the result text : 
+					// - starts with the desired serie name
+					// - has the season search 
+					// - has at least one episode search 
+					// => select the first one matching only
+					if (aEpisodeInfo != null
+							&& SubLeecherHelper.looseMatchStartsWith(aEpisodeInfo.getSerie(), this.tvShowInfo.getSerie())
+							&& aEpisodeInfo.getSeason() == this.tvShowInfo.getSeason()
+							&& TvShowInfoHelper.testIfOneEpisodeMatches(this.tvShowInfo.getEpisodes(), aEpisodeInfo.getEpisodes()))
+					{					
+						log.debug(String.format("> Matching result found : '%s'", aText));
+						aEpisodeMatch = aEpisode;
+						break;
+					}
+					else {
+						log.debug(String.format("> Non matching result : '%s'", aText));
+					}
+				}
+				
+				if (aEpisodeMatch == null) {
+					// No episode found => end
+					log.debug("> No match in result !");
+					return null;
+				}
+	
+				// Get the episode URL from link
+				episodeUrl = ADDIC7ED_URL + "/" + aEpisodeMatch.attr("href");
+							
+				// ********************************************
+				// 2 - Episode Page
+				
+				// Connect to episode page
+				log.debug(String.format("Search for subtitles for episode '%s' ...", episode));
+				docEpisode = Jsoup.connect(episodeUrl)
+						.timeout(QUERY_TIME_OUT)
+						.header("Referer", searchUrl)
+						.get();
 			}
-
-			// Get the episode URL from link
-			String episodeUrl = ADDIC7ED_URL + "/" + aEpisodeMatch.attr("href");
-						
-			// ********************************************
-			// 2 - Episode Page
-			
-			// Connect to episode page
-			log.debug(String.format("Search for subtitles for episode '%s' ...", episode));
-			Document docEpisode = Jsoup.connect(episodeUrl)
-					.timeout(QUERY_TIME_OUT)
-					.header("Referer", searchUrl)
-					.get();	
+			else {
+				// Direct access to episode page
+				
+				log.debug(String.format("Search for subtitles for episode '%s' ...", episode));
+				docEpisode = respSearch.parse();
+				episodeUrl = respSearchUrl.toString();				
+			}
 
 			// Browse lines in subtitles table
 			Elements tdLanguageList = docEpisode.select("td[class=language]");
