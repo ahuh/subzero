@@ -3,9 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.subzero</groupId>
 	<artifactId>subzero-app</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<packaging>pom</packaging>
 	<name>subzero-app</name>
+	<properties>
+		<subzero.version>1.0.5</subzero.version>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
