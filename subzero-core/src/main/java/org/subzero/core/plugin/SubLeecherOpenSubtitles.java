@@ -100,7 +100,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 				// Check if the result text : 
 				// - starts with the desired serie name
 				// => select the first one matching only
-				if (SubLeecherHelper.looseMatchStartsWith(aSerieCleaned, this.tvShowInfo.getSerie()))
+				if (SubLeecherHelper.looseMatchStartsWith(aSerieCleaned, this.tvShowInfo.getSerie(), true))
 				{					
 					log.debug(String.format("> Matching result found : '%s'", aText));
 					aSerieMatch = aSerie;

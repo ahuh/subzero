@@ -113,7 +113,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 					// - has at least one episode search 
 					// => select the first one matching only
 					if (aEpisodeInfo != null
-							&& SubLeecherHelper.looseMatchStartsWith(aEpisodeInfo.getSerie(), this.tvShowInfo.getSerie())
+							&& SubLeecherHelper.looseMatchStartsWith(aEpisodeInfo.getSerie(), this.tvShowInfo.getSerie(), true)
 							&& aEpisodeInfo.getSeason() == this.tvShowInfo.getSeason()
 							&& TvShowInfoHelper.testIfOneEpisodeMatches(this.tvShowInfo.getEpisodes(), aEpisodeInfo.getEpisodes()))
 					{					
@@ -166,7 +166,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 
 				Element tdStatus = tdLanguage.nextElementSibling();
 				String tdStatusText = tdStatus.text();
-				if (!SubLeecherHelper.looseMatchStartsWith(tdStatusText, "completed")) {
+				if (!SubLeecherHelper.looseMatchStartsWith(tdStatusText, "completed", false)) {
 					// Language present but not Completed => next line
 					continue;
 				}

@@ -64,16 +64,17 @@ public class SubZeroTest {
 		}		
 	}
 
-	//@Test
+	@Test
 	public void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+		String[] tests = {	"doctor.who.2005.s08e01.hdtv.x264-tla.mp4"/*,
+							"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"the.big.bang.theory.S07E03.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
-							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"		
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"*/		
 		};
 		
 		for (String test : tests)
@@ -194,7 +195,7 @@ public class SubZeroTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void testRegEx() throws Exception
 	{
 		String[] tests = {	"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",

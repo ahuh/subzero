@@ -21,7 +21,7 @@ public class SubLeecherHelper {
 	
 	/**
 	 * Remove all non alphabetics or digits characters in string (to lower case)
-	 * @param input
+	 * @param value
 	 * @return
 	 */
 	public static String keepOnlyAlphaAndDigits(String value) {
@@ -33,7 +33,7 @@ public class SubLeecherHelper {
 	
 	/**
 	 * Remove all non alphabetics characters in string (to lower case)
-	 * @param input
+	 * @param value
 	 * @return
 	 */
 	public static String keepOnlyAlpha(String value) {
@@ -45,7 +45,7 @@ public class SubLeecherHelper {
 	
 	/**
 	 * Remove all non digits characters in string
-	 * @param input
+	 * @param value
 	 * @return
 	 */
 	public static String keepOnlyDigits(String value) {
@@ -53,6 +53,18 @@ public class SubLeecherHelper {
 			value = "";
 		}
 		return value.replaceAll("[^0-9]+","");
+	}
+	
+	/**
+	 * Remove a year at the end of a string
+	 * @param value
+	 * @return
+	 */
+	public static String removeYearAtTheEnd(String value) {
+		if (value == null) {
+			value = "";
+		}
+		return value.replaceAll("[0-2][0-9]{3}$","").toLowerCase();
 	}
 	
 	/**
@@ -76,11 +88,16 @@ public class SubLeecherHelper {
 	 * Does "value" string starts with "search" (loose-matching) 
 	 * @param value
 	 * @param search
+	 * @param removeYearInSerie
 	 * @return
 	 */
-	public static boolean looseMatchStartsWith(String value, String search) {
+	public static boolean looseMatchStartsWith(String value, String search, boolean removeYearInSerie) {
 		String adSearch = SubLeecherHelper.keepOnlyAlphaAndDigits(search);
 		String adValue = SubLeecherHelper.keepOnlyAlphaAndDigits(value);
+		if (removeYearInSerie) {
+			adSearch = SubLeecherHelper.removeYearAtTheEnd(adSearch);
+			adValue = SubLeecherHelper.removeYearAtTheEnd(adValue);
+		}
 		
 		if (!search.equals("") && !value.equals("") && adValue.startsWith(adSearch)) {
 			return true;			
@@ -205,7 +222,7 @@ public class SubLeecherHelper {
 					// Search result release equals specified release group : 1000 points !
 					releaseMatchBonus = 1000;
 				}
-				else if (SubLeecherHelper.looseMatchStartsWith(srRelease, releaseGroup)) {
+				else if (SubLeecherHelper.looseMatchStartsWith(srRelease, releaseGroup, false)) {
 					// Search result release starts with specified release group : 500 points !
 					releaseMatchBonus = 500;
 				}

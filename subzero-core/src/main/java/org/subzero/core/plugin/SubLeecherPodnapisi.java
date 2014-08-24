@@ -177,7 +177,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 						// - starts with the desired serie name
 						// => select the first one matching only
 						if (concatTitle != ""
-								&& SubLeecherHelper.looseMatchStartsWith(concatTitle, this.tvShowInfo.getSerie()))
+								&& SubLeecherHelper.looseMatchStartsWith(concatTitle, this.tvShowInfo.getSerie(), true))
 						{
 							resultMatch = true;
 						}					
