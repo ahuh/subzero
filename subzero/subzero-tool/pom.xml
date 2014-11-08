@@ -66,7 +66,7 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>zip-full-jar</id>
+						<id>copy-filter-resources</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -93,7 +93,7 @@
 				<artifactId>truezip-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>zipinjar-release-files</id>
+						<id>inject-in-jar</id>
 						<goals>
 							<goal>copy</goal>
 						</goals>
@@ -103,6 +103,7 @@
 								<directory>${project.build.directory}/release-files</directory>
 								<includes>
 				                  <include>ReadMe.txt</include>
+				                  <include>SubZero.properties</include>
 				                  <include>Version.properties</include>
 				                </includes>
 								<outputDirectory>${project.build.directory}/release-files/SubZero.jar</outputDirectory>
@@ -126,7 +127,7 @@
 								<directory>${project.build.directory}/release-files</directory>
 								<includes>
 				                  <include>ReadMe.txt</include>
-				                  <include>Version.properties</include>
+				                  <include>SubZero.properties</include>
 				                  <include>SubZero.jar</include>
 				                </includes>
 								<outputDirectory>${project.build.directory}/release-zip/SubZero_v${project.version}.zip/SubZero</outputDirectory>
