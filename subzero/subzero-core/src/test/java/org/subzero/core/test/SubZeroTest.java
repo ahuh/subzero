@@ -196,14 +196,36 @@ public class SubZeroTest {
 	}
 	
 	@Test
-	public void testRegExSerieNoYear() throws Exception
+	public void testRegExSerieYear() throws Exception
 	{
 		String[] tests = {	"Doctor Who",
 							"Doctor Who 2005",
 							"Doctor Who (2005)",
 							"House M.D.",
-							"House M.D. 2004-2013",
-							"House M.D. (2004-2013)"
+							"House M.D. 1992-2013",
+							"House M.D. (1992-2013)"
+						};
+		
+		for (String test : tests)
+		{
+			log.debug(String.format("**** Serie Year > input=%s", test));
+			String serieNoYear = TvShowInfoHelper.removeYearsFromSerieName(test);			
+			log.debug(String.format("Serie Year > output=%s", serieNoYear));
+			
+			// Check no numeric in value
+			assertNotNull(serieNoYear);
+			assertNotEquals(serieNoYear, "");
+			assertFalse(serieNoYear.matches(".*\\d.*"));
+		}
+	}
+	
+	@Test
+	public void testRegExSerieNoYear() throws Exception
+	{
+		String[] tests = {	"Beverly Hills 90210",
+							"Anno 1790",
+							"Code 37",
+							"This Is England 86"
 						};
 		
 		for (String test : tests)
@@ -212,10 +234,10 @@ public class SubZeroTest {
 			String serieNoYear = TvShowInfoHelper.removeYearsFromSerieName(test);			
 			log.debug(String.format("Serie No Year > output=%s", serieNoYear));
 			
-			// Check no numeric in value
+			// Check numeric in value
 			assertNotNull(serieNoYear);
 			assertNotEquals(serieNoYear, "");
-			assertFalse(serieNoYear.matches(".*\\d.*"));
+			assertTrue(serieNoYear.matches(".*\\d.*"));
 		}
 	}
 	
