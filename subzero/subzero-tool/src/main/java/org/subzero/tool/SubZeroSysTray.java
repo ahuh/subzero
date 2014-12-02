@@ -186,8 +186,9 @@ public class SubZeroSysTray {
      */
     protected static File getFileOrFolder(String path) throws Exception {
     	//URL config = Thread.currentThread().getContextClassLoader().getResource("");
-    	URL itemURL = SubZeroSysTray.class.getResource(path);
-    	return new File(URLDecoder.decode(itemURL.getFile(), "UTF-8"));
+    	//URL itemURL = SubZeroSysTray.class.getResource(path);    	
+    	File file = new File(System.getProperty("user.dir") + path);    	
+    	return new File(URLDecoder.decode(file.getAbsolutePath(), "UTF-8"));
     }
 	
     /**

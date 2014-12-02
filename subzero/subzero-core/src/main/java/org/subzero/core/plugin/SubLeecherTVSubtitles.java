@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			
 			// Connect to search page & search the episode
 			log.debug(String.format("Search for serie '%s' ...", serie));
-			String searchUrl = TVSUBTITLES_URL + "/search.php?q=" + serie;
+			String searchUrl = TVSUBTITLES_URL + "/search.php?q=" + URLEncoder.encode(serie, "UTF-8");
 			Document docSearch = Jsoup.connect(searchUrl)
 					.timeout(QUERY_TIME_OUT)
 					.get();
@@ -95,8 +96,11 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 				
 				// Check if the result text : 
 				// - starts with the desired serie name
+				// OR
+				// - ends with the desired serie name
 				// => select the first one matching only
-				if (SubLeecherHelper.looseMatchStartsWith(aSerieCleaned, this.tvShowInfo.getSerie(), true))
+				if (SubLeecherHelper.looseMatchStartsWith(aSerieCleaned, this.tvShowInfo.getSerie(), true)
+						|| SubLeecherHelper.looseMatchEndsWith(aSerieCleaned, this.tvShowInfo.getSerie(), true))
 				{					
 					log.debug(String.format("> Matching result found : '%s'", aText));
 					aSerieMatch = aSerie;

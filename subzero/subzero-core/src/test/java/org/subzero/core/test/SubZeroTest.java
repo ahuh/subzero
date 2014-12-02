@@ -67,14 +67,15 @@ public class SubZeroTest {
 	//@Test
 	public void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"doctor.who.2005.s08e01.hdtv.x264-tla.mp4",
+		String[] tests = {	"The Clone Wars S03E14 HDTV - Witches of the Mist.avi"
+							/*"doctor.who.2005.s08e01.hdtv.x264-tla.mp4",
 							"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"the.big.bang.theory.S07E03.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
-							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"*/
 		};
 		
 		for (String test : tests)
@@ -102,13 +103,14 @@ public class SubZeroTest {
 	//@Test
 	public void testSubLeecherTVSubtitles() throws Exception
 	{
-		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+		String[] tests = {	"The Clone Wars S03E14 HDTV - Witches of the Mist.avi"
+							/*"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.7x09.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
-							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"*/
 		};
 		
 		for (String test : tests)
@@ -136,14 +138,15 @@ public class SubZeroTest {
 	//@Test
 	public void testSubLeecherPodnapisi() throws Exception
 	{
-		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+		String[] tests = {	"The Clone Wars S03E14 HDTV - Witches of the Mist.avi"
+							/*"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",
 							"House.5x14.Hoo.Yeah-LOL.mkv",
 							"Smash.S02E01E02.HDTV.x264-LOL.mp4",
 							"White.Coller.S02E26.mkv",
-							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"
+							"Spaced.S01E02.Gatherings.HD.TV-SiCKBEARD.mkv"*/
 		};
 		
 		for (String test : tests)
@@ -170,8 +173,9 @@ public class SubZeroTest {
 	//@Test
 	public void testSubLeecherOpenSubtitles() throws Exception
 	{
-		String[] tests = {	"the.vampire.diaries.S05E14.hdtv-lol.mp4",
-							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv"
+		String[] tests = {	"The Clone Wars S03E14 HDTV - Witches of the Mist.avi"
+							/*"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv"*/
 		};
 		
 		for (String test : tests)

@@ -110,11 +110,16 @@ public class SubLeecherHelper {
 	 * Does "value" string ends with "search" (loose-matching) 
 	 * @param value
 	 * @param search
+	 * @param removeYearInSerie
 	 * @return
 	 */
-	public static boolean looseMatchEndsWith(String value, String search) {
+	public static boolean looseMatchEndsWith(String value, String search, boolean removeYearInSerie) {
 		String adSearch = SubLeecherHelper.keepOnlyAlphaAndDigits(search);
 		String adValue = SubLeecherHelper.keepOnlyAlphaAndDigits(value);
+		if (removeYearInSerie) {
+			adSearch = SubLeecherHelper.removeYearAtTheEnd(adSearch);
+			adValue = SubLeecherHelper.removeYearAtTheEnd(adValue);
+		}
 		
 		if (!search.equals("") && !value.equals("") && adValue.endsWith(adSearch)) {
 			return true;			
@@ -226,7 +231,7 @@ public class SubLeecherHelper {
 					// Search result release starts with specified release group : 500 points !
 					releaseMatchBonus = 500;
 				}
-				else if (SubLeecherHelper.looseMatchEndsWith(srRelease, releaseGroup)) {
+				else if (SubLeecherHelper.looseMatchEndsWith(srRelease, releaseGroup, false)) {
 					// Search result release ends with specified release group : 250 points !
 					releaseMatchBonus = 250;
 				}

@@ -237,7 +237,27 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 						.header("Referer", searchUrl)
 						.get();
 				
-				Element aDownload = docSubtitle.select("div[id=subtitle] a[class=button big download]").first();
+				Element aDownloadLink = docSubtitle.select("div[id=subtitle] a[class=button big download]").first();
+				if (aDownloadLink == null) {
+					// No download link
+					log.debug("> Download not available : no predownload link found in page");
+					continue;
+				}
+				
+				// Get the predownload  URL
+				String preDownloadLinkUrl = PODNAPISI_URL + aDownloadLink.attr("href");
+				
+				// ********************************************
+				// 3 - Pre Download Page
+				
+				// Connect to predownload link page		
+				log.debug(String.format("Go to predownload page at URL '%s' ...", preDownloadLinkUrl));
+				Document docPreDownloadUrl = Jsoup.connect(preDownloadLinkUrl)
+						.timeout(QUERY_TIME_OUT)
+						.header("Referer", subtitleUrl)
+						.get();
+				
+				Element aDownload = docPreDownloadUrl.select("div[id=content_left] div[class=content] a").first();
 				if (aDownload == null) {
 					// No download link
 					log.debug("> Download not available : no download link found in page");
@@ -249,7 +269,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 				
 				
 				// ********************************************
-				// 3 - Download Page
+				// 4 - Download Page
 				
 				// Connection to download page
 				log.debug(String.format("Try to download subtitle at URL '%s' ...", downloadUrl));
