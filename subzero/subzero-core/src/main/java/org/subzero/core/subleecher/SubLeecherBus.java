@@ -1,5 +1,7 @@
 package org.subzero.core.subleecher;
 
+import java.io.File;
+
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.FileHelper;
@@ -27,6 +29,8 @@ public class SubLeecherBus {
 
 	/**
 	 * Check if a subtitle file corresponding to the video file already exists in working folder
+	 * The subtitle file must be named with serie, season and episode corresponding to the video file,
+	 * and it must be suffixed with (SUB.ZERO.XX).srt (XX = language, srt = subtitle format)
 	 * @return SubTitleInfo object if it exists, null if it does not exist 
 	 * @throws Exception 
 	 */
@@ -34,13 +38,28 @@ public class SubLeecherBus {
 	{
 		SubTitleInfo existingSubTitleInfo = null;
 		
-		for (String language : PropertiesHelper.getSubLeecherLanguages())
-		{
-			for (String subFileType : PropertiesHelper.getSubFileExtensions())
-			{
-				String subFileName = TvShowInfoHelper.prepareSubtitleFileName(tvShowInfo, language, subFileType);
-				if (FileHelper.doesWorkingFileExist(subFileName)) {						
-					existingSubTitleInfo = new SubTitleInfo(subFileName, language);
+		// Get all subtitle files in working folder
+		for (String subtitleFileName : FileHelper.getSubtitleFiles()) {
+			// Populate TV Show Info from subtitle file name
+			TvShowInfo subtitleTvShowInfo = TvShowInfoHelper.populateTvShowInfo(subtitleFileName, true, false);
+			
+			// Check if TV Show Info from subtitle is the same
+			if (subtitleTvShowInfo != null && TvShowInfoHelper.testIfTvShowInfoMatch(tvShowInfo, subtitleTvShowInfo)) {
+				
+				// Check language in file name
+				String subtitleLanguage = null;				
+				for (String language : PropertiesHelper.getSubLeecherLanguages())
+				{
+					for (String subFileType : PropertiesHelper.getSubFileExtensions())
+					{
+						if (subtitleFileName.endsWith(TvShowInfoHelper.prepareSubtitleSuffixFileName(language, subFileType))) {
+							subtitleLanguage = language;
+						}
+					}
+				}
+				
+				if (subtitleLanguage != null) {
+					existingSubTitleInfo = new SubTitleInfo(subtitleFileName, subtitleLanguage);
 					return existingSubTitleInfo;
 				}
 			}

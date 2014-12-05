@@ -31,7 +31,7 @@ public class SubZeroTest {
 		PropertiesHelper.configureLogger();
 	}
 	
-	//@Test
+	@Test
 	public void testFullProcess() throws Exception
 	{
 		for (String inputVideoFileName : FileHelper.getWorkingVideoFiles())
