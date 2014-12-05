@@ -86,9 +86,19 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			log.debug(String.format("Search for episode '%s' ...", episode));
 			String searchUrl = ADDIC7ED_URL + "/search.php?search=" + episode;			
 			Response respSearch = Jsoup.connect(searchUrl)
+					.followRedirects(false)
 					.timeout(QUERY_TIME_OUT)
 					.execute();
 					//.get();
+			
+			String redirectLocation = respSearch.header("Location");
+			if (redirectLocation != null) {
+				// Direct access to episode page
+				searchUrl = ADDIC7ED_URL + "/" + redirectLocation;
+				respSearch = Jsoup.connect(searchUrl)
+						.timeout(QUERY_TIME_OUT)
+						.execute();
+			}
 			
 			Document docSearch = null;
 			Document docEpisode = null;

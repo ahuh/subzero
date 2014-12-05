@@ -67,8 +67,9 @@ public class SubZeroTest {
 	//@Test
 	public void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"The Clone Wars S03E14 HDTV - Witches of the Mist.avi"
-							/*"doctor.who.2005.s08e01.hdtv.x264-tla.mp4",
+		String[] tests = {	"the.vampire.diaries.609.hdtv-lol.mp4"
+							/*"The Clone Wars S03E14 HDTV - Witches of the Mist.avi",
+							"doctor.who.2005.s08e01.hdtv.x264-tla.mp4",
 							"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"the.big.bang.theory.S07E03.mkv",
