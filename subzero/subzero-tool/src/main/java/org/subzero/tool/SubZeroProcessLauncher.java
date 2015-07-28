@@ -54,7 +54,7 @@ public class SubZeroProcessLauncher {
 				
 				if (subTitleInfo == null) {
 					// Launch SubLeecher Bus ...
-					log.info(String.format("Processing video file ''%s' : searching for subtitle...", inputVideoFileName));
+					log.info(String.format("Processing video file '%s' : searching for subtitle...", inputVideoFileName));
 					subTitleInfo = subLeecherBus.launchBus();
 				}
 				else {
@@ -68,7 +68,7 @@ public class SubZeroProcessLauncher {
 				else 
 				{
 					// Launch PostProcessor ...
-					log.info(String.format("Processing video file ''%s' : post-processing ...", inputVideoFileName));
+					log.info(String.format("Processing video file '%s' : post-processing ...", inputVideoFileName));
 					PostProcessLauncher postProcessor = new PostProcessLauncher(tvShowInfo, subTitleInfo);
 					boolean ppResult = postProcessor.launchPostProcess();
 					if (ppResult) {

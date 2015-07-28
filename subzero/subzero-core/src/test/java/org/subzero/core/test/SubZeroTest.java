@@ -31,7 +31,7 @@ public class SubZeroTest {
 		PropertiesHelper.configureLogger();
 	}
 	
-	@Test
+	//@Test
 	public void testFullProcess() throws Exception
 	{
 		for (String inputVideoFileName : FileHelper.getWorkingVideoFiles())
@@ -249,7 +249,9 @@ public class SubZeroTest {
 	@Test
 	public void testRegEx() throws Exception
 	{
-		String[] tests = {	"doctor_who_2005_S08E03E04_hdtv_x264-tla.mp4",
+		String[] tests = {	"Defiance.S03E06.Where.The.Apples.Fell.1080p.WEB-DL.DD5.1.H.264-ECI.mkv",
+							"The.Strain.S02E01.BK.NY.720p.WEB-DL.DD5.1.H.264-Juggalotus.mkv",
+							"doctor_who_2005_S08E03E04_hdtv_x264-tla.mp4",
 							"doctor_who_2005_8x03x04_hdtv_x264-tla.mp4",
 							"doctor_who_2005_80304_hdtv_x264-tla.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",

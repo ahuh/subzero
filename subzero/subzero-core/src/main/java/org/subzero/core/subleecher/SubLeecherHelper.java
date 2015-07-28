@@ -197,11 +197,11 @@ public class SubLeecherHelper {
 	/**
 	 * Evaluation the score for the subtitle search result, based on release group match and number of downloads
 	 * @param subSearchResult
-	 * @param releaseGroup
-	 * @param releaseGroupMatchRequired if "true" and "releaseGroup" specified, a non matching release group will return null
-	 * @return SubSearchResult object with score populated, or with score = -1 if excluded because of "releaseGroup" & "releaseGroupMatchRequired" parameters
+	 * @param expectedReleaseGroup
+	 * @param releaseGroupMatchRequired if "true" and "expectedReleaseGroup" specified, a non matching release group will return null
+	 * @return SubSearchResult object with score populated, or with score = -1 if excluded because of "expectedReleaseGroup" & "releaseGroupMatchRequired" parameters
 	 */
-	public static SubSearchResult evaluateScore(SubSearchResult subSearchResult, String releaseGroup, boolean releaseGroupMatchRequired) {
+	public static SubSearchResult evaluateScore(SubSearchResult subSearchResult, String expectedReleaseGroup, boolean releaseGroupMatchRequired) {
 		if (subSearchResult == null) {
 			return null;
 		}
@@ -213,29 +213,29 @@ public class SubLeecherHelper {
 				subSearchResult.getRelease());
 		
 		int releaseMatchBonus = 0;
-		if (releaseGroup == null || releaseGroup.equals("")) {
+		if (expectedReleaseGroup == null || expectedReleaseGroup.isEmpty()) {
 			// No release group specified : no bonus on score
 		}
 		else {
 			// Release group specified
 			String srRelease = outResult.getRelease();
-			if (srRelease == null || srRelease.equals("")) {
+			if (srRelease == null || srRelease.isEmpty()) {
 				// No release in result : no bonus on score
 			}
 			else {
-				if (SubLeecherHelper.looseMatchEquals(srRelease, releaseGroup)) {
+				if (SubLeecherHelper.looseMatchEquals(srRelease, expectedReleaseGroup)) {
 					// Search result release equals specified release group : 1000 points !
 					releaseMatchBonus = 1000;
 				}
-				else if (SubLeecherHelper.looseMatchStartsWith(srRelease, releaseGroup, false)) {
+				else if (SubLeecherHelper.looseMatchStartsWith(srRelease, expectedReleaseGroup, false)) {
 					// Search result release starts with specified release group : 500 points !
 					releaseMatchBonus = 500;
 				}
-				else if (SubLeecherHelper.looseMatchEndsWith(srRelease, releaseGroup, false)) {
+				else if (SubLeecherHelper.looseMatchEndsWith(srRelease, expectedReleaseGroup, false)) {
 					// Search result release ends with specified release group : 250 points !
 					releaseMatchBonus = 250;
 				}
-				else if (SubLeecherHelper.looseMatchContains(srRelease, releaseGroup)) {
+				else if (SubLeecherHelper.looseMatchContains(srRelease, expectedReleaseGroup)) {
 					// Search result release contains specified release group : 100 points !
 					releaseMatchBonus = 100;
 				}
