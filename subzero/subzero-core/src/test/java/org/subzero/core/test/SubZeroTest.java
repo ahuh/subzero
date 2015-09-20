@@ -67,8 +67,9 @@ public class SubZeroTest {
 	//@Test
 	public void testSubLeecherAddicted() throws Exception
 	{
-		String[] tests = {	"the.vampire.diaries.609.hdtv-lol.mp4"
-							/*"The Clone Wars S03E14 HDTV - Witches of the Mist.avi",
+		String[] tests = {	"doctor.who.2005.s09e01.hdtv.x264-tla.mp4",
+							/*"the.vampire.diaries.609.hdtv-lol.mp4",
+							"The Clone Wars S03E14 HDTV - Witches of the Mist.avi",
 							"doctor.who.2005.s08e01.hdtv.x264-tla.mp4",
 							"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
@@ -200,7 +201,7 @@ public class SubZeroTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void testRegExSerieYear() throws Exception
 	{
 		String[] tests = {	"Doctor Who",
@@ -224,7 +225,7 @@ public class SubZeroTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void testRegExSerieNoYear() throws Exception
 	{
 		String[] tests = {	"Beverly Hills 90210",
@@ -249,7 +250,10 @@ public class SubZeroTest {
 	@Test
 	public void testRegEx() throws Exception
 	{
-		String[] tests = {	"Defiance.S03E06.Where.The.Apples.Fell.1080p.WEB-DL.DD5.1.H.264-ECI.mkv",
+		String[] tests = {	"Doctor Who - 09x01 - The Magician's Apprentice.mp4",
+							"doctor.who.2005.s09e01.hdtv.x264-tla.mp4",
+							"The.Strain.S02E08.Intruders.720p.WEB-DL.DD5.1.H.264-Juggalotus.mkv",
+							"Defiance.S03E06.Where.The.Apples.Fell.1080p.WEB-DL.DD5.1.H.264-ECI.mkv",
 							"The.Strain.S02E01.BK.NY.720p.WEB-DL.DD5.1.H.264-Juggalotus.mkv",
 							"doctor_who_2005_S08E03E04_hdtv_x264-tla.mp4",
 							"doctor_who_2005_8x03x04_hdtv_x264-tla.mp4",

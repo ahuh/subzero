@@ -88,6 +88,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			Response respSearch = Jsoup.connect(searchUrl)
 					.followRedirects(false)
 					.timeout(QUERY_TIME_OUT)
+					.ignoreHttpErrors(true)
 					.execute();
 					//.get();
 			
