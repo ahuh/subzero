@@ -83,7 +83,8 @@ public class SubZeroTest {
 		for (String test : tests)
 		{
 			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
-		
+			SubTitleInfo subTitleInfo = null;
+			
 			// 1 - Search subtitles for each language in property
 			for (String language : PropertiesHelper.getSubLeecherLanguages())
 			{
@@ -91,14 +92,14 @@ public class SubZeroTest {
 
 				subLeecher.initialize(tvShowInfo, language, PropertiesHelper.getSubLeecherReleaseGroupRequired());
 
-				SubTitleInfo subTitleInfo = subLeecher.leechSub();
+				subTitleInfo = subLeecher.leechSub();
 				if (subTitleInfo != null)
 				{
 					// Subtitles found !
 					log.debug("SUBTITLE FOUUUUUUUUUUUUUUUUUUUUUND !");
-				}
-				assertNotNull(subTitleInfo);
+				}				
 			}
+			assertNotNull(subTitleInfo);
 		}
 	}
 	
@@ -117,7 +118,8 @@ public class SubZeroTest {
 		
 		for (String test : tests)
 		{
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);
+			SubTitleInfo subTitleInfo = null;
 		
 			// 1 - Search subtitles for each language in property
 			for (String language : PropertiesHelper.getSubLeecherLanguages())
@@ -126,14 +128,14 @@ public class SubZeroTest {
 
 				subLeecher.initialize(tvShowInfo, language, PropertiesHelper.getSubLeecherReleaseGroupRequired());
 
-				SubTitleInfo subTitleInfo = subLeecher.leechSub();
+				subTitleInfo = subLeecher.leechSub();
 				if (subTitleInfo != null)
 				{
 					// Subtitles found !
 					log.debug("SUBTITLE FOUUUUUUUUUUUUUUUUUUUUUND !");
-				}
-				assertNotNull(subTitleInfo);
+				}				
 			}
+			assertNotNull(subTitleInfo);
 		}
 	}
 	
@@ -153,7 +155,8 @@ public class SubZeroTest {
 		
 		for (String test : tests)
 		{
-			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);			
+			TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(test, true);
+			SubTitleInfo subTitleInfo = null;
 		
 			// 1 - Search subtitles for each language in property
 			for (String language : PropertiesHelper.getSubLeecherLanguages())
@@ -162,13 +165,14 @@ public class SubZeroTest {
 
 				subLeecher.initialize(tvShowInfo, language, PropertiesHelper.getSubLeecherReleaseGroupRequired());
 
-				SubTitleInfo subTitleInfo = subLeecher.leechSub();
+				subTitleInfo = subLeecher.leechSub();
 				if (subTitleInfo != null)
 				{
 					// Subtitles found !
 					log.debug("SUBTITLE FOUUUUUUUUUUUUUUUUUUUUUND !");
-				}
-			}
+				}				
+			}			
+			assertNotNull(subTitleInfo);
 		}
 	}
 	

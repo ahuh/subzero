@@ -40,6 +40,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 	private static final String SITE_NAME = "OpenSubtitles";
 	private static final String OPENSUBTITLES_URL = "http://www.opensubtitles.org";
 	private static final String OPENSUBTITLES_DOWNLOAD_URL = "http://dl.opensubtitles.org/en/download/sub/";
+	private static final String FAKE_USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:44.0) Gecko/20100101 Firefox/44.0";
 	
 	private static final int QUERY_TIME_OUT = 30000;
 	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
@@ -66,6 +67,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 			log.debug(String.format("Search for serie '%s' ...", serie));
 			String searchUrl = OPENSUBTITLES_URL + "/en/search2/sublanguageid-all/moviename-" + serie.replace(' ', '+');
 			Document docSearch = Jsoup.connect(searchUrl)
+					.userAgent(FAKE_USER_AGENT)
 					.timeout(QUERY_TIME_OUT)
 					.get();
 			
@@ -98,9 +100,9 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 				String aSerieCleaned = TvShowInfoHelper.removeYearsFromSerieName(aText);
 				
 				// Check if the result text : 
-				// - starts with the desired serie name
+				// - contains the desired serie name
 				// => select the first one matching only
-				if (SubLeecherHelper.looseMatchStartsWith(aSerieCleaned, this.tvShowInfo.getSerie(), true))
+				if (SubLeecherHelper.looseMatchContains(aSerieCleaned, this.tvShowInfo.getSerie()))
 				{					
 					log.debug(String.format("> Matching result found : '%s'", aText));
 					aSerieMatch = aSerie;
@@ -126,6 +128,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 			// Connect to season page
 			log.debug(String.format("Search for episode '%s' ...", episode));
 			Document docSeason = Jsoup.connect(serieUrl)
+					.userAgent(FAKE_USER_AGENT)
 					.timeout(QUERY_TIME_OUT)
 					.header("Referer", searchUrl)
 					.get();	
@@ -208,6 +211,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 				// Connect to episode List page
 				log.debug(String.format("> Search URL : %s", nextPageUrl));
 				Document docEpisode = Jsoup.connect(nextPageUrl)
+						.userAgent(FAKE_USER_AGENT)
 						.timeout(QUERY_TIME_OUT)
 						.header("Referer", serieUrl)
 						.get();	
@@ -337,6 +341,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 				byte[] bytes = null;				
 				try {
 					bytes = Jsoup.connect(downloadUrl)
+							.userAgent(FAKE_USER_AGENT)
 							.timeout(QUERY_TIME_OUT)
 							.header("Referer", episodeListUrl)
 							.ignoreContentType(true)
