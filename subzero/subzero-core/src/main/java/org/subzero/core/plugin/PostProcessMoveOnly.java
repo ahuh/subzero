@@ -26,8 +26,8 @@ public class PostProcessMoveOnly extends PostProcessBase {
 		try {
 			log.debug("Post-Process Move Only - Start");
 			
-			// Build output path (with serie, season)
-			String outputFolderPath = PropertiesHelper.getOutputFolderPath(tvShowInfo.getSerie(), tvShowInfo.getSeason().toString());			
+			// Ensure that the output folder exists
+			FileHelper.ensureFolder(outputFolderPath);
 			
 			log.debug(String.format("Try to move files to '%s'", outputFolderPath));
 			

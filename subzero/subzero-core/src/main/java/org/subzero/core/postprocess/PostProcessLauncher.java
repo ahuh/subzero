@@ -17,6 +17,8 @@ public class PostProcessLauncher {
 	private SubTitleInfo subTitleInfo;
 	
 	private String workingFolderPath;
+	
+	private String outputFolderPath;
 
 	/**
 	 * Constructor
@@ -24,11 +26,11 @@ public class PostProcessLauncher {
 	 * @param tvShowInfo
 	 * @param subTitleInfo
 	 */
-	public PostProcessLauncher(String workingFolderPath, TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo)
-	{
+	public PostProcessLauncher(String workingFolderPath, TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo, String outputFolderPath)	{
 		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 		this.subTitleInfo = subTitleInfo;
+		this.outputFolderPath = outputFolderPath;
 	}
 
 	/**
@@ -36,13 +38,12 @@ public class PostProcessLauncher {
 	 * @return Success (true) or failure (false)
 	 * @throws Exception
 	 */
-	public boolean launchPostProcess() throws Exception
-	{
+	public boolean launchPostProcess() throws Exception	{
 		String stPlugin = PropertiesHelper.getPostProcessPlugin();
 		Class<? extends PostProcessBase> plugin = Class.forName(stPlugin).asSubclass(PostProcessBase.class);
 		PostProcessBase postProcess = (PostProcessBase)plugin.newInstance();
 
-		postProcess.initialize(workingFolderPath, tvShowInfo, subTitleInfo);
+		postProcess.initialize(workingFolderPath, tvShowInfo, subTitleInfo, outputFolderPath);
 
 		return postProcess.launchPostProcess();
 	}

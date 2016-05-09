@@ -10,21 +10,24 @@ import org.subzero.core.bean.TvShowInfo;
  */
 public abstract class PostProcessBase {
 	
-	protected SubTitleInfo subTitleInfo;
-	
 	protected TvShowInfo tvShowInfo;
 	
+	protected SubTitleInfo subTitleInfo;
+	
 	protected String workingFolderPath;
+	
+	protected String outputFolderPath;
 	
 	/**
 	 * Initialize parameters
 	 * @param tvShowName
 	 */
-	public void initialize(String workingFolderPath, TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo)
+	public void initialize(String workingFolderPath, TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo, String outputFolderPath)
 	{
 		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 		this.subTitleInfo = subTitleInfo;
+		this.outputFolderPath = outputFolderPath;
 	}
 	
 	/**

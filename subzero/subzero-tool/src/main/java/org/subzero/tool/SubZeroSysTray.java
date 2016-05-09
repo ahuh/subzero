@@ -27,6 +27,7 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.subzero.core.bean.ProcessReport;
 import org.subzero.core.helper.PropertiesHelper;
+import org.subzero.core.launcher.SubZeroProcessLauncher;
 
 /**
  * SubZero SysTray class
@@ -88,7 +89,8 @@ public class SubZeroSysTray {
 							trayIcon.displayMessage(SUBZERO_POPUP_NAME, "Launching process ...", TrayIcon.MessageType.INFO);
 						}
 						trayIcon.setImage(getImage(SUBZERO_ICON_WORKING_PATH));
-						ProcessReport report = SubZeroProcessLauncher.launchProcess();
+						SubZeroProcessLauncher launcher = new SubZeroProcessLauncher();
+						ProcessReport report = launcher.launchProcess();
 						if (report == null) {
 							// No Report
 							trayIcon.displayMessage(SUBZERO_POPUP_NAME, "Error while processing video files :(", TrayIcon.MessageType.ERROR);
