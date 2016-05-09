@@ -16,14 +16,18 @@ public abstract class SubLeecherBase {
 	
 	protected boolean releaseGroupMatchRequired;
 	
+	protected String workingFolderPath;
+	
 	/**
 	 * Initialize parameters
+	 * @param workingFolderPath
 	 * @param tvShowInfo
 	 * @param subLanguage
 	 * @param releaseGroupMatchRequired
 	 */
-	public void initialize(TvShowInfo tvShowInfo, String subLanguage, boolean releaseGroupMatchRequired)
+	public void initialize(String workingFolderPath, TvShowInfo tvShowInfo, String subLanguage, boolean releaseGroupMatchRequired)
 	{
+		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 		this.subLanguage = subLanguage;
 		this.releaseGroupMatchRequired = releaseGroupMatchRequired;

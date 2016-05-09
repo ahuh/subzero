@@ -15,14 +15,18 @@ public class PostProcessLauncher {
 	private TvShowInfo tvShowInfo;
 	
 	private SubTitleInfo subTitleInfo;
+	
+	private String workingFolderPath;
 
 	/**
 	 * Constructor
+	 * @param workingFolderPath
 	 * @param tvShowInfo
 	 * @param subTitleInfo
 	 */
-	public PostProcessLauncher(TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo)
+	public PostProcessLauncher(String workingFolderPath, TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo)
 	{
+		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 		this.subTitleInfo = subTitleInfo;
 	}
@@ -38,7 +42,7 @@ public class PostProcessLauncher {
 		Class<? extends PostProcessBase> plugin = Class.forName(stPlugin).asSubclass(PostProcessBase.class);
 		PostProcessBase postProcess = (PostProcessBase)plugin.newInstance();
 
-		postProcess.initialize(tvShowInfo, subTitleInfo);
+		postProcess.initialize(workingFolderPath, tvShowInfo, subTitleInfo);
 
 		return postProcess.launchPostProcess();
 	}

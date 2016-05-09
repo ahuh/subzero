@@ -32,9 +32,8 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
 			log.debug("Post-Process MkvMerge & Move - Start");
 			
 			// Prepare input paths
-			String workingFolderPath = PropertiesHelper.getWorkingFolderPath();
-			String inputVideoFilePath = workingFolderPath + File.separator + tvShowInfo.getInputVideoFileName();
-			String subFilePath = workingFolderPath + File.separator + subTitleInfo.getSubFileName();
+			String inputVideoFilePath = this.workingFolderPath + File.separator + tvShowInfo.getInputVideoFileName();
+			String subFilePath = this.workingFolderPath + File.separator + subTitleInfo.getSubFileName();
 						
 			// Prepare output paths (serie, season)
 			String outputFolderPath = PropertiesHelper.getOutputFolderPath(tvShowInfo.getSerie(), tvShowInfo.getSeason().toString());			
@@ -72,24 +71,24 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
             	// Keep original files            	
             	String oriFolderPath = PropertiesHelper.getMkvMergeMoveOriFilesFolderPath();
             	log.debug(String.format("Moving original files to Ori Folder '%s'", oriFolderPath));
-            	FileHelper.moveWorkingFileToOutputFolder(tvShowInfo.getInputVideoFileName(), oriFolderPath);
-    			FileHelper.moveWorkingFileToOutputFolder(subTitleInfo.getSubFileName(), oriFolderPath);
+            	FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, tvShowInfo.getInputVideoFileName(), oriFolderPath);
+    			FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, subTitleInfo.getSubFileName(), oriFolderPath);
     			// Process extra files
     			if (subTitleInfo.getExtraFileNames() != null && subTitleInfo.getExtraFileNames().size() > 0) {
     				for (String extraFileName : subTitleInfo.getExtraFileNames()) {
-    					FileHelper.moveWorkingFileToOutputFolder(extraFileName, oriFolderPath);
+    					FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, extraFileName, oriFolderPath);
     				}
     			}
             }
             else {
             	// Delete original files
             	log.debug("Deleting original files");
-            	FileHelper.deleteWorkingFile(tvShowInfo.getInputVideoFileName());
-            	FileHelper.deleteWorkingFile(subTitleInfo.getSubFileName());
+            	FileHelper.deleteWorkingFile(this.workingFolderPath, tvShowInfo.getInputVideoFileName());
+            	FileHelper.deleteWorkingFile(this.workingFolderPath, subTitleInfo.getSubFileName());
             	// Process extra files
     			if (subTitleInfo.getExtraFileNames() != null && subTitleInfo.getExtraFileNames().size() > 0) {
     				for (String extraFileName : subTitleInfo.getExtraFileNames()) {
-    					FileHelper.deleteWorkingFile(extraFileName);
+    					FileHelper.deleteWorkingFile(this.workingFolderPath, extraFileName);
     				}
     			}
             }

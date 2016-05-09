@@ -1,7 +1,5 @@
 package org.subzero.core.subleecher;
 
-import java.io.File;
-
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.FileHelper;
@@ -17,20 +15,24 @@ import org.subzero.core.helper.TvShowInfoHelper;
 public class SubLeecherBus {
 	
 	private TvShowInfo tvShowInfo;
+	
+	private String workingFolderPath;
 
 	/**
 	 * Constructor
+	 * @param workingFolderPath
 	 * @param tvShowInfo
 	 */
-	public SubLeecherBus(TvShowInfo tvShowInfo)
+	public SubLeecherBus(String workingFolderPath, TvShowInfo tvShowInfo)
 	{
+		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 	}
 
 	/**
 	 * Check if a subtitle file corresponding to the video file already exists in working folder
 	 * The subtitle file must be named with serie, season and episode corresponding to the video file,
-	 * and it must be suffixed with (SUB.ZERO.XX).srt (XX = language, srt = subtitle format)
+	 * and it must be suffixed with XX.srt (XX = language, srt = subtitle format)
 	 * @return SubTitleInfo object if it exists, null if it does not exist 
 	 * @throws Exception 
 	 */
@@ -39,7 +41,7 @@ public class SubLeecherBus {
 		SubTitleInfo existingSubTitleInfo = null;
 		
 		// Get all subtitle files in working folder
-		for (String subtitleFileName : FileHelper.getSubtitleFiles()) {
+		for (String subtitleFileName : FileHelper.getSubtitleFiles(workingFolderPath)) {
 			// Populate TV Show Info from subtitle file name
 			TvShowInfo subtitleTvShowInfo = TvShowInfoHelper.populateTvShowInfo(subtitleFileName, true, false);
 			
@@ -84,7 +86,7 @@ public class SubLeecherBus {
 				Class<? extends SubLeecherBase> plugin = Class.forName(stPlugin).asSubclass(SubLeecherBase.class);
 				SubLeecherBase subLeecher = (SubLeecherBase)plugin.newInstance();
 
-				subLeecher.initialize(tvShowInfo, language, PropertiesHelper.getSubLeecherReleaseGroupRequired());
+				subLeecher.initialize(workingFolderPath, tvShowInfo, language, PropertiesHelper.getSubLeecherReleaseGroupRequired());
 
 				SubTitleInfo subTitleInfo = subLeecher.leechSub();
 				if (subTitleInfo != null)

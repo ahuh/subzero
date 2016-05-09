@@ -295,14 +295,18 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 				
 				// Save zipped subtitle file to working folder
 				String zippedSubFileName = TvShowInfoHelper.prepareZippedSubtitleFileName(this.tvShowInfo, this.subLanguage);				
-				String zippedSubPath = PropertiesHelper.getWorkingFolderPath() + "/" + zippedSubFileName;
+				String zippedSubPath = this.workingFolderPath + "/" + zippedSubFileName;
 				FileOutputStream fos = new FileOutputStream(zippedSubPath);
 				fos.write(bytes);
 				fos.close();
 				log.debug(String.format("> Zipped subtitle downloaded to path '%s'", zippedSubPath));
 				
 				// Unzip the first subtitle file in ZIP 
-				String subFileName = FileHelper.unZipWorkingFirstSubFile(zippedSubFileName, TvShowInfoHelper.prepareBaseOutputFileName(this.tvShowInfo, this.subLanguage));
+				String subFileName = FileHelper.unZipWorkingFirstSubFile(
+						this.workingFolderPath, 
+						zippedSubFileName, 
+						TvShowInfoHelper.prepareBaseOutputFileName(this.tvShowInfo, this.subLanguage));
+				
 				if (subFileName == null) {
 					// No download link
 					log.debug("> No subtitle found in ZIP file");

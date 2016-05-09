@@ -3,7 +3,6 @@ package org.subzero.core.plugin;
 import org.apache.log4j.Logger;
 import org.subzero.core.helper.FileHelper;
 import org.subzero.core.helper.PropertiesHelper;
-import org.subzero.core.helper.TvShowInfoHelper;
 import org.subzero.core.postprocess.PostProcessBase;
 
 /**
@@ -32,13 +31,11 @@ public class PostProcessMoveOnly extends PostProcessBase {
 			
 			log.debug(String.format("Try to move files to '%s'", outputFolderPath));
 			
-			// Rename input video file
-			String newVideoFileName = TvShowInfoHelper.prepareVideoFileNameKeepFileType(tvShowInfo, subTitleInfo.getLanguage());
-			FileHelper.renameWorkingFile(tvShowInfo.getInputVideoFileName(), newVideoFileName);
-			
 			// Move subtile & video files to output path
-			FileHelper.moveWorkingFileToOutputFolder(newVideoFileName, outputFolderPath);
-			FileHelper.moveWorkingFileToOutputFolder(subTitleInfo.getSubFileName(), outputFolderPath);
+			String inputVideoFileName = tvShowInfo.getInputVideoFileName();
+			String subFileName = subTitleInfo.getSubFileName();
+			FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, inputVideoFileName, outputFolderPath);
+			FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, subFileName, outputFolderPath);
 			
 			// Process extra files
 			if (subTitleInfo.getExtraFileNames() != null && subTitleInfo.getExtraFileNames().size() > 0) {
@@ -48,7 +45,7 @@ public class PostProcessMoveOnly extends PostProcessBase {
 	            	String oriFolderPath = PropertiesHelper.getMkvMergeMoveOriFilesFolderPath();
 	            	log.debug(String.format("Moving extra files to Ori Folder '%s'", oriFolderPath));
 	            	for (String extraFileName : subTitleInfo.getExtraFileNames()) {
-						FileHelper.moveWorkingFileToOutputFolder(extraFileName, oriFolderPath);
+						FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, extraFileName, oriFolderPath);
 					}
 	            }
 	            else {
@@ -56,13 +53,13 @@ public class PostProcessMoveOnly extends PostProcessBase {
 	            	log.debug("Deleting extra files");
 	    			if (subTitleInfo.getExtraFileNames() != null && subTitleInfo.getExtraFileNames().size() > 0) {
 	    				for (String extraFileName : subTitleInfo.getExtraFileNames()) {
-	    					FileHelper.deleteWorkingFile(extraFileName);
+	    					FileHelper.deleteWorkingFile(this.workingFolderPath, extraFileName);
 	    				}
 	    			}
 	            }
 			}			
 			
-			log.info(String.format("Post-Process Move Only succeeded for file '%s' to folder '%s'", newVideoFileName, newVideoFileName));
+			log.info(String.format("Post-Process Move Only succeeded for files '%s' and '%s' to folder '%s'", inputVideoFileName, subFileName, outputFolderPath));
 			
             return true;
         }

@@ -37,10 +37,12 @@ public class SubZeroProcessLauncher {
 			log.debug(String.format("Begin SubZero Process on working folder '%s' ...", PropertiesHelper.getWorkingFolderPath()));
 			
 			// Get video files to process in Working Folder
+			String workingFolderPath = PropertiesHelper.getWorkingFolderPath();
+			
 			int nbFileSuccess = 0;
 			int nbFileNoSub = 0;
 			int nbFileNoPostProcess = 0;
-			List<String> fileList = FileHelper.getWorkingVideoFiles();
+			List<String> fileList = FileHelper.getVideoFiles(workingFolderPath);
 			log.debug(String.format("Number of video files to process : %s", fileList.size()));
 			
 			for (String inputVideoFileName : fileList)
@@ -49,7 +51,7 @@ public class SubZeroProcessLauncher {
 				TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(inputVideoFileName, true);
 				
 				// Initialize SubLeecher Bus and check if a subtitle file exists in working folder
-				SubLeecherBus subLeecherBus = new SubLeecherBus(tvShowInfo);
+				SubLeecherBus subLeecherBus = new SubLeecherBus(workingFolderPath, tvShowInfo);
 				SubTitleInfo subTitleInfo = subLeecherBus.checkExistingSubFile();	
 				
 				if (subTitleInfo == null) {
@@ -69,7 +71,7 @@ public class SubZeroProcessLauncher {
 				{
 					// Launch PostProcessor ...
 					log.info(String.format("Processing video file '%s' : post-processing ...", inputVideoFileName));
-					PostProcessLauncher postProcessor = new PostProcessLauncher(tvShowInfo, subTitleInfo);
+					PostProcessLauncher postProcessor = new PostProcessLauncher(workingFolderPath, tvShowInfo, subTitleInfo);
 					boolean ppResult = postProcessor.launchPostProcess();
 					if (ppResult) {
 						log.debug("Video & subtitle files post-processed with success !");

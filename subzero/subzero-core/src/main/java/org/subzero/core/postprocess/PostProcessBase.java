@@ -14,12 +14,15 @@ public abstract class PostProcessBase {
 	
 	protected TvShowInfo tvShowInfo;
 	
+	protected String workingFolderPath;
+	
 	/**
 	 * Initialize parameters
 	 * @param tvShowName
 	 */
-	public void initialize(TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo)
+	public void initialize(String workingFolderPath, TvShowInfo tvShowInfo, SubTitleInfo subTitleInfo)
 	{
+		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 		this.subTitleInfo = subTitleInfo;
 	}

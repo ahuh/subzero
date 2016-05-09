@@ -18,7 +18,6 @@ import org.jsoup.select.Elements;
 import org.subzero.core.bean.SubSearchResult;
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
-import org.subzero.core.helper.PropertiesHelper;
 import org.subzero.core.helper.TvShowInfoHelper;
 import org.subzero.core.subleecher.SubLeecherBase;
 import org.subzero.core.subleecher.SubLeecherHelper;
@@ -286,7 +285,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 
 				// Save subtitle file to working folder
 				String subFileName = TvShowInfoHelper.prepareSubtitleFileName(this.tvShowInfo, this.subLanguage, "srt");			
-				String subPath = PropertiesHelper.getWorkingFolderPath() + "/" + subFileName;
+				String subPath = this.workingFolderPath + "/" + subFileName;
 				FileOutputStream fos = new FileOutputStream(subPath);
 				fos.write(bytes);
 				fos.close();
