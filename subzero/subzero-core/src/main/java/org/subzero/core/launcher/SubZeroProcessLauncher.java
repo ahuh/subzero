@@ -1,5 +1,6 @@
 package org.subzero.core.launcher;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -221,7 +222,7 @@ public class SubZeroProcessLauncher {
 		// Recursive mode : populate with video files in subfolders
 		if (PropertiesHelper.getWorkingFolderRecursiveMode()) {			
 			for (String folderName : FileHelper.getSubFoldersToProcess(workingFolderPath)) {
-				populateVideoFileList(folderName);
+				populateVideoFileList(workingFolderPath + File.separator + folderName);
 			}			
 		}		
 	}

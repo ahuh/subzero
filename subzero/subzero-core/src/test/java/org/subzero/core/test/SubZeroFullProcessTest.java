@@ -20,7 +20,7 @@ public class SubZeroFullProcessTest {
 		PropertiesHelper.configureLogger();
 	}
 	
-	@Test
+	//@Test
 	public void testFullProcess() throws Exception
 	{
 		SubZeroProcessLauncher launcher = new SubZeroProcessLauncher();
