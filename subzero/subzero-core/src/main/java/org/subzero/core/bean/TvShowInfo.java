@@ -15,6 +15,7 @@ public class TvShowInfo {
 	private String title;
 	private String fileType;
 	private String releaseGroup;
+	private String cleanedReleaseGroup;
 	
 	public String getInputVideoFileName() {
 		return inputVideoFileName;
@@ -57,6 +58,12 @@ public class TvShowInfo {
 	}
 	public void setReleaseGroup(String releaseGroup) {
 		this.releaseGroup = releaseGroup;
+	}
+	public String getCleanedReleaseGroup() {
+		return cleanedReleaseGroup;
+	}
+	public void setCleanedReleaseGroup(String cleanedReleaseGroup) {
+		this.cleanedReleaseGroup = cleanedReleaseGroup;
 	}
 	public TvShowInfo()
 	{

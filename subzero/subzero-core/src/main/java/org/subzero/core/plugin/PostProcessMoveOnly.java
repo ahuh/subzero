@@ -34,8 +34,8 @@ public class PostProcessMoveOnly extends PostProcessBase {
 			// Move subtile & video files to output path
 			String inputVideoFileName = tvShowInfo.getInputVideoFileName();
 			String subFileName = subTitleInfo.getSubFileName();
-			FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, inputVideoFileName, outputFolderPath);
-			FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, subFileName, outputFolderPath);
+			FileHelper.moveWorkingFileToFolder(this.workingFolderPath, inputVideoFileName, outputFolderPath);
+			FileHelper.moveWorkingFileToFolder(this.workingFolderPath, subFileName, outputFolderPath);
 			
 			// Process extra files
 			if (subTitleInfo.getExtraFileNames() != null && subTitleInfo.getExtraFileNames().size() > 0) {
@@ -45,7 +45,7 @@ public class PostProcessMoveOnly extends PostProcessBase {
 	            	String oriFolderPath = PropertiesHelper.getMkvMergeMoveOriFilesFolderPath();
 	            	log.debug(String.format("Moving extra files to Ori Folder '%s'", oriFolderPath));
 	            	for (String extraFileName : subTitleInfo.getExtraFileNames()) {
-						FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, extraFileName, oriFolderPath);
+						FileHelper.moveWorkingFileToFolder(this.workingFolderPath, extraFileName, oriFolderPath);
 					}
 	            }
 	            else {

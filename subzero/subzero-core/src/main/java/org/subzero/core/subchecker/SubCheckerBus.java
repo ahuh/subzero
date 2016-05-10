@@ -26,8 +26,7 @@ public class SubCheckerBus {
 	 * @param tvShowInfo
 	 * @param subLanguage
 	 */
-	public SubCheckerBus(String workingFolderPath, TvShowInfo tvShowInfo, String subLanguage)
-	{
+	public SubCheckerBus(String workingFolderPath, TvShowInfo tvShowInfo, String subLanguage) {
 		this.workingFolderPath = workingFolderPath;
 		this.tvShowInfo = tvShowInfo;
 		this.subLanguage = subLanguage;
@@ -73,13 +72,13 @@ public class SubCheckerBus {
 	}
 	
 	/**
-	 * Check if the video file name contains a bypass keyword (e.g. .FRENCH. ; .vostfr. ; ...)
+	 * Check if the video file name contains a bypass keyword for the given language (e.g. .FRENCH. ; .vostfr. ; ...)
 	 * No subtitle search is required for "bypass" files (skip files)
 	 * @return true : bypass file ; false : process file
 	 * @throws Exception 
 	 */
 	public boolean checkFilenameBypassKeyword() throws Exception {
-		for (String bypassKeyword : PropertiesHelper.getSubCheckerBypassKeywords()) {
+		for (String bypassKeyword : PropertiesHelper.getSubCheckerBypassKeywords(subLanguage)) {
 			if (tvShowInfo.getInputVideoFileName().toLowerCase().contains(bypassKeyword.toLowerCase())) {
 				return true;
 			}
@@ -89,7 +88,7 @@ public class SubCheckerBus {
 	
 	/**
 	 * Launch the internal sub checker bus for the given language and for each plugin
-	 * @return true : internal subtitle exists ; false : no internal subtitle
+	 * @return true : internal subtitle exists (found by one of the plugins) ; false : no internal subtitle (not found by any plugins)
 	 * @throws Exception
 	 */
 	public boolean launchInternalSubCheckerBus() throws Exception

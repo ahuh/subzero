@@ -82,8 +82,8 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			// 1 - Search Page
 			
 			// Connect to search page & search the episode
-			log.debug(String.format("Search for episode '%s' ...", episode));
-			String searchUrl = ADDIC7ED_URL + "/search.php?search=" + episode;			
+			String searchUrl = ADDIC7ED_URL + "/search.php?search=" + episode;
+			log.debug(String.format("Search for episode '%s' at URL '%s' ...", episode, searchUrl));
 			Response respSearch = Jsoup.connect(searchUrl)
 					.followRedirects(false)
 					.timeout(QUERY_TIME_OUT)
@@ -93,8 +93,9 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			
 			String redirectLocation = respSearch.header("Location");
 			if (redirectLocation != null) {
-				// Direct access to episode page
+				// Direct access to episode page				
 				searchUrl = ADDIC7ED_URL + "/" + redirectLocation;
+				log.debug(String.format("Redirect to episode direct access at URL '%s' ...", searchUrl));
 				respSearch = Jsoup.connect(searchUrl)
 						.timeout(QUERY_TIME_OUT)
 						.execute();
@@ -149,7 +150,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 				// 2 - Episode Page
 				
 				// Connect to episode page
-				log.debug(String.format("Search for subtitles for episode '%s' ...", episode));
+				log.debug(String.format("Search for subtitles for episode '%s' at URL '%s' ...", episode, episodeUrl));
 				docEpisode = Jsoup.connect(episodeUrl)
 						.timeout(QUERY_TIME_OUT)
 						.header("Referer", searchUrl)
@@ -158,7 +159,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			else {
 				// Direct access to episode page
 				
-				log.debug(String.format("Search for subtitles for episode '%s' ...", episode));
+				log.debug(String.format("Search for subtitles for episode '%s' in direct access ...", episode));
 				docEpisode = respSearch.parse();
 				episodeUrl = respSearchUrl.toString();				
 			}
@@ -223,6 +224,7 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 					int commaPosRelease = episodeRelease.indexOf(",");
 					if (commaPosRelease > -1) {
 						episodeRelease = episodeRelease.substring(0, commaPosRelease);
+						episodeRelease = TvShowInfoHelper.cleanReleaseGroupNamingPart(episodeRelease);
 					}
 				}
 				
@@ -238,7 +240,11 @@ public class SubLeecherAddicted extends SubLeecherBase  {
 			}
 			
 			// Evaluate the matching score and sort the subtitle results !
-			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(subSearchResults, this.tvShowInfo.getReleaseGroup(), this.releaseGroupMatchRequired);
+			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(
+					subSearchResults, 
+					this.tvShowInfo.getCleanedReleaseGroup(), 
+					this.releaseGroupMatchRequired);
+			
 			if (scoredSubs == null || scoredSubs.size() == 0) {
 				log.debug("> No matching result");
 				return null;

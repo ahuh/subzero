@@ -1,7 +1,6 @@
 package org.subzero.core.plugin;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
@@ -21,6 +20,8 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
 	 */
 	private static String TEMP_FILE_PREFIX = "TEMP_";
 	
+	private static String MKV_EXTENSION = "mkv";
+	
 	/**
 	 * Logger
 	 */
@@ -32,6 +33,7 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
 	 */
 	@Override
 	public boolean launchPostProcess() {
+		String outputFilePath = "";
 		try {
 			log.debug("Post-Process MkvMerge & Move - Start");
 			
@@ -41,11 +43,11 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
 			FileHelper.renameWorkingFile(this.workingFolderPath, inputVideoFileName, tempInputVideoFileName);
 			
 			// Prepare input paths
-			String tempVideoFilePath = this.workingFolderPath + File.separator + tempInputVideoFileName;
-			String subFilePath = this.workingFolderPath + File.separator + subTitleInfo.getSubFileName();
+			String tempVideoFilePath = this.workingFolderPath + FileHelper.FILE_SEPARATOR + tempInputVideoFileName;
+			String subFilePath = this.workingFolderPath + FileHelper.FILE_SEPARATOR + subTitleInfo.getSubFileName();
 						
-			// Prepare output paths (serie, season)
-			String outputFilePath = outputFolderPath + File.separator + inputVideoFileName;
+			// Prepare output paths
+			outputFilePath = outputFolderPath + FileHelper.FILE_SEPARATOR + FileHelper.replaceExtensionInFileName(inputVideoFileName, MKV_EXTENSION);
 			
 			log.debug(String.format("Try to generate output file '%s'", outputFilePath));
 			
@@ -53,13 +55,13 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
 			FileHelper.ensureFolder(outputFolderPath);
 			
 			// Prepare subtitle language for MKVMerge : 2 first letters
-			String language = subTitleInfo.getLanguage().toLowerCase().substring(0,2);
+			String languageCode = subTitleInfo.getLanguage().toLowerCase().substring(0,2);
 			
 			// Execute MKVMerge command line
 			log.debug("Executing MKVMerge and logging output :");
 			ProcessBuilder processBuilder = new ProcessBuilder(PropertiesHelper.getMkvMergeMoveMkvMergeCommandLine(
 					outputFilePath, 
-					language, 
+					languageCode, 
 					subFilePath, 
 					tempVideoFilePath));
             Process process = processBuilder.start();
@@ -75,7 +77,7 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
             int exitVal = process.waitFor();
             log.debug(String.format("Exited with return code : %s", exitVal));
             if (exitVal == 2) {
-            	throw new Exception(String.format("Error detected in MKVMerge !", exitVal));
+            	throw new Exception("Error detected in MKVMerge !");
             }
             
             // Move original input files to Ori folder or delete
@@ -83,12 +85,12 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
             	// Keep original files            	
             	String oriFolderPath = PropertiesHelper.getMkvMergeMoveOriFilesFolderPath();
             	log.debug(String.format("Moving original files to Ori Folder '%s'", oriFolderPath));
-            	FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, tempInputVideoFileName, oriFolderPath, inputVideoFileName);
-    			FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, subTitleInfo.getSubFileName(), oriFolderPath);
+            	FileHelper.moveWorkingFileToFolder(this.workingFolderPath, tempInputVideoFileName, oriFolderPath, inputVideoFileName);
+    			FileHelper.moveWorkingFileToFolder(this.workingFolderPath, subTitleInfo.getSubFileName(), oriFolderPath);
     			// Process extra files
     			if (subTitleInfo.getExtraFileNames() != null && subTitleInfo.getExtraFileNames().size() > 0) {
     				for (String extraFileName : subTitleInfo.getExtraFileNames()) {
-    					FileHelper.moveWorkingFileToOutputFolder(this.workingFolderPath, extraFileName, oriFolderPath);
+    					FileHelper.moveWorkingFileToFolder(this.workingFolderPath, extraFileName, oriFolderPath);
     				}
     			}
             }
@@ -105,12 +107,14 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
     			}
             }
             
+            //TODO:corriger bug : il faut changer extension en mkv dans tous les cas (output folder vide ou pas)
+            
             log.info(String.format("Post-Process MkvMerge & Move succeeded for file '%s'", outputFilePath));
             
             return true;
         }
 		catch (Exception e) {
-			log.error("Error while trying to post-process files with MKV Merge & Move", e);
+			log.error(String.format("Error while trying to post-process files with MKV Merge & Move for file '%s'", outputFilePath), e);
             return false;
         }
 		finally

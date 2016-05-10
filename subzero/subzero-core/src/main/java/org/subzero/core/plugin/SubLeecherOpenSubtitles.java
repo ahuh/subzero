@@ -63,8 +63,8 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 			// 1 - Search Page
 			
 			// Connect to search page & search the serie
-			log.debug(String.format("Search for serie '%s' ...", serie));
-			String searchUrl = OPENSUBTITLES_URL + "/en/search2/sublanguageid-all/moviename-" + serie.replace(' ', '+');
+			String searchUrl = OPENSUBTITLES_URL + "/en/search2/sublanguageid-all/moviename-" + serie.toLowerCase().replace(' ', '+');
+			log.debug(String.format("Search for serie '%s' at URL '%s' ...", serie, searchUrl));			
 			Document docSearch = Jsoup.connect(searchUrl)
 					.userAgent(FAKE_USER_AGENT)
 					.timeout(QUERY_TIME_OUT)
@@ -99,9 +99,9 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 				String aSerieCleaned = TvShowInfoHelper.removeYearsFromSerieName(aText);
 				
 				// Check if the result text : 
-				// - contains the desired serie name
+				// - starts with the desired serie name
 				// => select the first one matching only
-				if (SubLeecherHelper.looseMatchContains(aSerieCleaned, this.tvShowInfo.getSerie()))
+				if (SubLeecherHelper.looseMatchStartsWith(aSerieCleaned, this.tvShowInfo.getSerie(), true))
 				{					
 					log.debug(String.format("> Matching result found : '%s'", aText));
 					aSerieMatch = aSerie;
@@ -125,7 +125,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 			// 2 - Season Page
 						
 			// Connect to season page
-			log.debug(String.format("Search for episode '%s' ...", episode));
+			log.debug(String.format("Search for episode '%s' at URL '%s' ...", episode, serieUrl));
 			Document docSeason = Jsoup.connect(serieUrl)
 					.userAgent(FAKE_USER_AGENT)
 					.timeout(QUERY_TIME_OUT)
@@ -208,7 +208,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 			while (nextPageUrl != "")
 			{				
 				// Connect to episode List page
-				log.debug(String.format("> Search URL : %s", nextPageUrl));
+				log.debug(String.format("> Search at URL '%s' ...", nextPageUrl));
 				Document docEpisode = Jsoup.connect(nextPageUrl)
 						.userAgent(FAKE_USER_AGENT)
 						.timeout(QUERY_TIME_OUT)
@@ -274,10 +274,10 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 					}
 					
 					// Get the episode Release (OPTIONAL)
-					String episodeRelease = "";
+					String cleanedEpisodeRelease = "";
 					if (episodeTitle != "") {
 						TvShowInfo episodeResult = TvShowInfoHelper.populateTvShowInfoFromFreeText(episodeTitle, true);
-						episodeRelease = episodeResult.getReleaseGroup();
+						cleanedEpisodeRelease = episodeResult.getCleanedReleaseGroup();
 					}
 										
 					// Get the nb of downloads column in result table (3rd)
@@ -306,7 +306,7 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 						}
 					}
 					
-					subSearchResults.add(new SubSearchResult(subtitleUrl, this.subLanguage, episodeNbDownload, episodeRelease));
+					subSearchResults.add(new SubSearchResult(subtitleUrl, this.subLanguage, episodeNbDownload, cleanedEpisodeRelease));
 				}
 				
 				// Look for the pager div, and get the last link ">>" URL to go to next page
@@ -321,7 +321,11 @@ public class SubLeecherOpenSubtitles extends SubLeecherBase  {
 			}
 			
 			// Evaluate the matching score and sort the subtitle results !
-			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(subSearchResults, this.tvShowInfo.getReleaseGroup(), this.releaseGroupMatchRequired);
+			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(
+					subSearchResults, 
+					this.tvShowInfo.getCleanedReleaseGroup(), 
+					this.releaseGroupMatchRequired);
+			
 			if (scoredSubs == null || scoredSubs.size() == 0) {
 				log.debug("> No matching result");
 				return null;

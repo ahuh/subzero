@@ -5,7 +5,7 @@ import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.subleecher.SubLeecherBase;
 
 /**
- * Sub leecher plug-in with no operation (no subtitle file)
+ * Sub leecher plug-in with no operation (no subtitle leech)
  * @author Julien
  *
  */

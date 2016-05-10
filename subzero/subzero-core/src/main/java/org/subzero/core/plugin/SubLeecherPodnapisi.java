@@ -88,7 +88,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 			// Connect to search page & search the episode
 			log.debug(String.format("Search for episode '%s' (page 1) ...", episode));			
 			String searchUrl = getSearchUrl(1);
-			log.debug(String.format("> Search URL : %s", searchUrl));
+			log.debug(String.format("> Search at URL '%s' ...", searchUrl));
 			Document docSearch = Jsoup.connect(searchUrl)
 					.timeout(QUERY_TIME_OUT)
 					.get();
@@ -123,7 +123,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 					// Connect to next result page
 					log.debug(String.format("Search for episode '%s' (page %s) ...", episode, i));
 					String searchUrlNext = getSearchUrl(i);
-					log.debug(String.format("> Search URL : %s", searchUrlNext));
+					log.debug(String.format("> Search at URL '%s' ...", searchUrlNext));
 					docSearch = Jsoup.connect(searchUrlNext)
 							.timeout(QUERY_TIME_OUT)
 							.header("Referer", searchUrl)
@@ -197,12 +197,12 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 					}
 					
 					// Get the episode Release (OPTIONAL)
-					String episodeRelease = "";
+					String cleanedEpisodeRelease = "";
 					Element spanRelease = spanTitle.select("span[class=release]").first();
 					if (spanRelease != null) {
 						TvShowInfo releaseEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(spanRelease.text(), true);
 						if (releaseEpisodeInfo != null) {
-							episodeRelease = releaseEpisodeInfo.getReleaseGroup();
+							cleanedEpisodeRelease = releaseEpisodeInfo.getCleanedReleaseGroup();
 						}
 					}
 															
@@ -213,12 +213,16 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 						episodeNbDownload = Integer.parseInt(tdDownloads.text());
 					}
 					
-					subSearchResults.add(new SubSearchResult(subtitleUrl, this.subLanguage, episodeNbDownload, episodeRelease));
+					subSearchResults.add(new SubSearchResult(subtitleUrl, this.subLanguage, episodeNbDownload, cleanedEpisodeRelease));
 				}	
 			}
 			
 			// Evaluate the matching score and sort the subtitle results !
-			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(subSearchResults, this.tvShowInfo.getReleaseGroup(), this.releaseGroupMatchRequired);
+			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(
+					subSearchResults, 
+					this.tvShowInfo.getCleanedReleaseGroup(), 
+					this.releaseGroupMatchRequired);
+			
 			if (scoredSubs == null || scoredSubs.size() == 0) {
 				log.debug("> No matching result");
 				return null;

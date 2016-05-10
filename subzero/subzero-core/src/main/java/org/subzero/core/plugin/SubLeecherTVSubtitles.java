@@ -80,8 +80,9 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			// 1 - Search Page
 			
 			// Connect to search page & search the episode
-			log.debug(String.format("Search for serie '%s' ...", serie));
 			String searchUrl = TVSUBTITLES_URL + "/search.php?q=" + URLEncoder.encode(serie, "UTF-8");
+			log.debug(String.format("Search for serie '%s' at URL '%s' ...", serie, searchUrl));
+			
 			Document docSearch = Jsoup.connect(searchUrl)
 					.timeout(QUERY_TIME_OUT)
 					.get();
@@ -124,7 +125,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			// 2 - Season Page
 						
 			// Connect to season page
-			log.debug(String.format("Search for episode '%s' ...", episode));
+			log.debug(String.format("Search for episode '%s' at URL '%s' ...", episode, seasonsUrl));
 			Document docSeason = Jsoup.connect(seasonsUrl)
 					.timeout(QUERY_TIME_OUT)
 					.header("Referer", serieUrl)
@@ -184,7 +185,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			// 3 - Episode List Page
 			
 			// Connect to episode List page
-			log.debug(String.format("Search for subtitles for episode '%s' ...", episode));
+			log.debug(String.format("Search for subtitles for episode '%s' at URL '%s' ...", episode, episodeListUrl));
 			Document docEpisode = Jsoup.connect(episodeListUrl)
 					.timeout(QUERY_TIME_OUT)
 					.header("Referer", seasonsUrl)
@@ -214,7 +215,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 				Element pRelease = aSubtitle.select("p[title=release]").first();
 				String episodeRelease = "";
 				if (pRelease != null) {
-					episodeRelease = pRelease.text();
+					episodeRelease = TvShowInfoHelper.cleanReleaseGroupNamingPart(pRelease.text());
 				}
 				
 				// Get the number of downloads (OPTIONAL)
@@ -228,7 +229,11 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 			}
 			
 			// Evaluate the matching score and sort the subtitle results !
-			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(subSearchResults, this.tvShowInfo.getReleaseGroup(), this.releaseGroupMatchRequired);
+			List<SubSearchResult> scoredSubs = SubLeecherHelper.evaluateScoreAndSort(
+					subSearchResults, 
+					this.tvShowInfo.getCleanedReleaseGroup(), 
+					this.releaseGroupMatchRequired);
+			
 			if (scoredSubs == null || scoredSubs.size() == 0) {
 				log.debug("> No matching result");
 				return null;
@@ -241,7 +246,7 @@ public class SubLeecherTVSubtitles extends SubLeecherBase  {
 				
 				// Connect to subtitle page
 				String subtitleUrl = scoredSub.getUrl();				
-				log.debug(String.format("Go to subtitle page at URL '%s' ...", subtitleUrl));
+				log.debug(String.format("Go to subtitle page at URL '%s'", subtitleUrl));
 				Document docSubtitle = Jsoup.connect(subtitleUrl)
 						.timeout(QUERY_TIME_OUT)
 						.header("Referer", episodeListUrl)

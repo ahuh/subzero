@@ -143,10 +143,6 @@ public class SubZeroRegExTest {
 				log.debug(String.format("ShortName > %s",
 						shortName));
 				
-				String fileNameWithoutExt = TvShowInfoHelper.prepareVideoFileName(tvShowInfo, "French");			
-				log.debug(String.format("PrepareVideoFileName > %s",
-						fileNameWithoutExt));
-				
 				String fileName = TvShowInfoHelper.prepareSubtitleFileName(tvShowInfo, "French", "srt");			
 				log.debug(String.format("PrepareSubtitleFileName > %s",
 						fileName));

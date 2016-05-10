@@ -1,6 +1,5 @@
 package org.subzero.core.launcher;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,26 +69,24 @@ public class SubZeroProcessLauncher {
 			}
 			
 			// Process each video file
-			for (VideoFileToProcess inputVideoFile : inputVideoFileList)
-			{
+			for (VideoFileToProcess inputVideoFile : inputVideoFileList) {
 				boolean fileToProcess = false;
 				boolean fileSuccess = false;
 				boolean fileNoSub = false;
 				boolean fileNoPostProcess = false;
 				
 				// Process each subtitle language
-				for (String subLanguage : PropertiesHelper.getSubLeecherLanguages())
-				{
+				for (String subLanguage : PropertiesHelper.getSubLeecherLanguages()) {
 					// Populate TV Show Info from video file
 					TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(inputVideoFile.getVideoFileName(), true);
 					
 					// Initialize SubChecker Bus and 
 					SubCheckerBus subCheckerBus = new SubCheckerBus(inputVideoFile.getWorkingFolderPath(), tvShowInfo, subLanguage);
 					
-					// 1) Check if the video file name contains a bypass keyword (e.g. .FRENCH. ; .vostfr. ; ...)
+					// 1) Check if the video file name contains a bypass keyword for the given language (e.g. .FRENCH. ; .vostfr. ; ...)
 					if (subCheckerBus.checkFilenameBypassKeyword()) {
 						// Internal subtitle found : nothing to do
-						log.debug(String.format("Video file '%s' must be bypassed subtitle file already exists (nothing to do)", inputVideoFile.getVideoFileName()));
+						log.debug(String.format("Video file '%s' (language %s) must be bypassed : nothing to do", inputVideoFile.getVideoFileName(), subLanguage));
 						fileToProcess = false;
 						fileSuccess = false;
 						fileNoSub = false;
@@ -98,10 +95,10 @@ public class SubZeroProcessLauncher {
 					}
 					
 					// 2) Launch SubChecker Bus for internal subtitles ...
-					log.info(String.format("Processing video file '%s' (language %s) : checking internal subtitle...", inputVideoFile.getVideoFileName(), subLanguage));
+					log.debug(String.format("Processing video file '%s' (language %s) : checking internal subtitle...", inputVideoFile.getVideoFileName(), subLanguage));
 					if (subCheckerBus.launchInternalSubCheckerBus()) {
 						// Internal subtitle found : nothing to do
-						log.debug(String.format("Internal subtitle file (language %s) already exists (nothing to do)", subLanguage));
+						log.debug(String.format("Internal subtitle file (language %s) already exists : nothing to do", subLanguage));
 						fileToProcess = false;
 						fileSuccess = false;
 						fileNoSub = false;
@@ -222,7 +219,7 @@ public class SubZeroProcessLauncher {
 		// Recursive mode : populate with video files in subfolders
 		if (PropertiesHelper.getWorkingFolderRecursiveMode()) {			
 			for (String folderName : FileHelper.getSubFoldersToProcess(workingFolderPath)) {
-				populateVideoFileList(workingFolderPath + File.separator + folderName);
+				populateVideoFileList(workingFolderPath + FileHelper.FILE_SEPARATOR + folderName);
 			}			
 		}		
 	}
