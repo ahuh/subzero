@@ -109,7 +109,7 @@ public class SubZeroProcessLauncher {
 					// 3) Check if an external subtitle file exists in working folder
 					SubTitleInfo subTitleInfo = subCheckerBus.checkExternalSub();															
 					if (subTitleInfo != null) {
-						log.debug(String.format("External subtitle file '%s' (language %s) already exists : no leech)", subTitleInfo.getSubFileName(), 
+						log.debug(String.format("External subtitle file '%s' (language %s) already exists : no leech", subTitleInfo.getSubFileName(), 
 								subTitleInfo.getLanguage()));
 					}
 					else {		 

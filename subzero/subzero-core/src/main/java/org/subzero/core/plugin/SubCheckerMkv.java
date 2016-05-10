@@ -43,9 +43,22 @@ public class SubCheckerMkv extends SubCheckerBase  {
 		try {
 			log.debug("SubChecker MKV - Start");
 			
-			// Prepare input pathh
+			// Prepare input path
 			String inputVideoFileName = tvShowInfo.getInputVideoFileName();
 			inputVideoFilePath = this.workingFolderPath + FileHelper.FILE_SEPARATOR + inputVideoFileName;
+			
+			// Check file extension (must by MKV)
+			boolean isMkvFile = false;
+			for (String mkvFileExt : PropertiesHelper.getSubCheckerMkvVideoFileExtensions()) {
+				if (inputVideoFileName.toLowerCase().endsWith(FileHelper.EXT_SEPARATOR + mkvFileExt.toLowerCase())) {
+					isMkvFile = true;
+					break;
+				}
+			}
+			if (!isMkvFile) {
+				log.debug(String.format("Video file '%s' (language '%s') is not a MKV file : skip MKV sub checking", inputVideoFilePath, subLanguage));
+				return false;
+			}			
 			
 			// Prepare UI language for MKVMerge : 2 first letters
 			String uiLanguage = subLanguage.toLowerCase().substring(0,2);

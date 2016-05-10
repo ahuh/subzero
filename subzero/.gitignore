@@ -2,6 +2,6 @@ bin
 .metadata
 .settings
 target
-Logs
+logs
 .project
 .classpath
