@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Test;
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.PropertiesHelper;
@@ -107,8 +108,9 @@ public class SubZeroSubLeecherTest {
 	//@Test
 	public void testSubLeecherPodnapisi() throws Exception
 	{
-		String[] tests = {	"The Clone Wars S03E14 HDTV - Witches of the Mist.avi"
-							/*"the.vampire.diaries.S05E14.hdtv-lol.mp4",
+		String[] tests = {	"The.Walking.Dead.S06E15.East.HDTV.x264-KILLERS.mkv",
+							/*"The Clone Wars S03E14 HDTV - Witches of the Mist.avi",
+							"the.vampire.diaries.S05E14.hdtv-lol.mp4",
 							"Doctor.Who.(2005).S07E02.Dinosaurs.on.a.Spaceship.HDTV-FoV.mkv",
 							"Smash.1x06.mkv",
 							"The.Mentalist.S01E15.Red.John.Comes.Back.TV.x264-LOL.mkv",

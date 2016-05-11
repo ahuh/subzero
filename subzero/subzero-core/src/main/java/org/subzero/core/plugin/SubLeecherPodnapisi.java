@@ -2,16 +2,19 @@ package org.subzero.core.plugin;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,7 +23,6 @@ import org.subzero.core.bean.SubSearchResult;
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
 import org.subzero.core.helper.FileHelper;
-import org.subzero.core.helper.PropertiesHelper;
 import org.subzero.core.helper.TvShowInfoHelper;
 import org.subzero.core.subleecher.SubLeecherBase;
 import org.subzero.core.subleecher.SubLeecherHelper;
@@ -39,23 +41,9 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 	
 	// Constants
 	private static final String SITE_NAME = "Podnapisi";
-	private static final String PODNAPISI_URL = "http://www.podnapisi.net";
+	private static final String PODNAPISI_URL = "https://www.podnapisi.net";
 	private static final int QUERY_TIME_OUT = 30000;
 	private static final String ALT_DOWNLOAD_CHARSET = "UTF-8";
-	
-	/**
-	 * Get Search Page URL
-	 * @param page Number of result page
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 */
-	private String getSearchUrl(int page) throws UnsupportedEncodingException {
-		return String.format(PODNAPISI_URL + "/ppodnapisi/search?sT=1&sK=%s&sTS=%s&sTE=%s&page=%s",
-				URLEncoder.encode(this.tvShowInfo.getSerie(), "UTF-8"),
-				this.tvShowInfo.getSeason(),
-				this.tvShowInfo.getEpisodes().get(0),
-				page);
-	}
 	
 	/**
 	 * Leech the subtitles of the TV show from the web site
@@ -69,152 +57,136 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 		{
 			log.debug(String.format("SubLeecher %s - Start - File='%s' ; Language='%s'", SITE_NAME, this.tvShowInfo.getInputVideoFileName(), this.subLanguage));
 			
-			// Language ID mapping for specified language (REQUIRED)
-			int languageId = -1;
-			String languagePodnapisi = PropertiesHelper.getPluginPodnapisiIdLanguage(this.subLanguage);
-			if (languagePodnapisi == null) {
-				log.warn("No Podnapisi language ID mapped to '%' in properties file");
+			String episode = TvShowInfoHelper.getShortName(this.tvShowInfo);			
+			String languageCode = subLanguage.toLowerCase().substring(0, 2);
+			
+			// ********************************************
+			// 1 - Serie Search Endpoint (JSON)
+			
+			// Connect to search endpoint & search the serie
+			// https://www.podnapisi.net/subtitles/search/?keywords=the%20walking%20dead&movie_type=tv-series&output_format=json
+			log.debug(String.format("Search for serie '%s' ...", this.tvShowInfo.getSerie()));
+			String serieSearchUrl = String.format(PODNAPISI_URL + "/subtitles/search/?keywords=%s&movie_type=tv-series&output_format=json",
+					URLEncoder.encode(this.tvShowInfo.getSerie(), ALT_DOWNLOAD_CHARSET));
+			
+			log.debug(String.format("> Search at URL '%s' ...", serieSearchUrl));			
+			String jsonString = Jsoup.connect(serieSearchUrl)
+					.timeout(QUERY_TIME_OUT)
+					.ignoreContentType(true)
+					.execute()
+					.body();
+			
+			if (jsonString == null || jsonString.isEmpty()) {
+				log.warn("> No JSON response to search query");
 				return null;
 			}
-			else {
-				languageId = Integer.parseInt(languagePodnapisi);
+			
+			JSONObject jsonDoc = new JSONObject(jsonString);
+            JSONArray jsonDataList = jsonDoc.getJSONArray("data");
+            if (jsonDataList == null || jsonDataList.length() == 0) {
+				log.debug("> No serie result");
+				return null;
 			}
-			
-			String episode = TvShowInfoHelper.getShortName(this.tvShowInfo);
-
-			// ********************************************
-			// 1 - Search Page
-			
-			// Connect to search page & search the episode
-			log.debug(String.format("Search for episode '%s' (page 1) ...", episode));			
-			String searchUrl = getSearchUrl(1);
-			log.debug(String.format("> Search at URL '%s' ...", searchUrl));
-			Document docSearch = Jsoup.connect(searchUrl)
-					.timeout(QUERY_TIME_OUT)
-					.get();
-			
-			// Get last result page number
-			Element aResultPage = docSearch.select("div[id=content_left] div[class=buttons] div[class=left] span[class=pages] a").last();
-			int lastPageNumber = 1;
-			if (aResultPage != null) {
-				// At least 2 result pages available
-				String resultUrl = aResultPage.attr("href");
-				for (String urlPart : resultUrl.split("//"))
-				{
-					// Get the URL part "//page/X" to extract last page number
-					String pagePart = "page/";
-					if (urlPart.toLowerCase().startsWith(pagePart)) {
-						lastPageNumber = Integer.parseInt(urlPart.toLowerCase().replace(pagePart, ""));
-						break;
-					}
-				}
-			}
-			log.debug(String.format("> Number of result pages in search : %s", lastPageNumber));
-			
-			List<SubSearchResult> subSearchResults = new ArrayList<SubSearchResult>();
-			
-			// Iterate through result pages
-			for (int i = 1 ; i <= lastPageNumber ; i++)
-			{
-				if (i > 1) {
-					// ********************************************
-					// 1.X - Next Search Pages
+            
+            // Iterate through serie results in JSON response
+            String foundSerieId = "";
+            String foundSerieSlug = "";
+            for (int i = 0; i < jsonDataList.length(); i++) {
+            	JSONObject jsonData = jsonDataList.getJSONObject(i);
+            	String jsonDataId = jsonData.getString("id");
+            	String jsonDataSlug = jsonData.getString("slug");
+            	String jsonDataTitle = jsonData.getString("title");
+            	
+            	// Check if the serie title : 
+				// - starts with the desired serie name
+				// => select the first one matching only
+				if (!jsonDataId.isEmpty() && !jsonDataSlug.isEmpty() && !jsonDataTitle.isEmpty()
+						&& SubLeecherHelper.looseMatchStartsWith(jsonDataTitle, this.tvShowInfo.getSerie(), true)) {
 					
-					// Connect to next result page
-					log.debug(String.format("Search for episode '%s' (page %s) ...", episode, i));
-					String searchUrlNext = getSearchUrl(i);
-					log.debug(String.format("> Search at URL '%s' ...", searchUrlNext));
-					docSearch = Jsoup.connect(searchUrlNext)
-							.timeout(QUERY_TIME_OUT)
-							.header("Referer", searchUrl)
-							.get();
+					log.debug(String.format("> Matching result found : '%s'", jsonDataTitle));
+					foundSerieId = jsonDataId;
+					foundSerieSlug = jsonDataSlug;
+					break;
+				}
+				else {
+					log.debug(String.format("> Non matching result : '%s'", jsonDataTitle));
+				}
+            }
+            
+            if (foundSerieId.isEmpty()) {
+            	log.debug("> Serie not found in results");
+				return null;
+            }
+            
+            // ********************************************
+            // 2 - Episode search page
+            
+            // Connect to search page & search the episode
+ 			log.debug(String.format("Search for episode '%s' (page 1) ...", episode));
+ 			String episodeSearchUrl = String.format(PODNAPISI_URL + "/subtitles/search/%s/%s?seasons=!%s&episodes=!%s&language=%s",
+ 					foundSerieSlug,
+ 					foundSerieId,
+ 					this.tvShowInfo.getSeason(),
+ 					this.tvShowInfo.getEpisodes().get(0), // Search only first episode if multiple episodes
+ 					languageCode // Search with parameter language code (2 first letters in lower case)
+ 					);
+ 			log.debug(String.format("> Search at URL '%s' ...", episodeSearchUrl));
+ 			Document docSearch = Jsoup.connect(episodeSearchUrl)
+ 					.timeout(QUERY_TIME_OUT)
+ 					.header("Accept-Language", languageCode)
+ 					.get();
+ 			
+ 			/*String html = docSearch.outerHtml();
+ 			FileUtils.writeStringToFile(new File("c:/temp/test1.html"), html, ALT_DOWNLOAD_CHARSET);
+ 			html = html.replaceAll("=([^\"^'^> ]+)", "=\"$1\"");
+ 			docSearch = Jsoup.parse(html);
+ 			FileUtils.writeStringToFile(new File("c:/temp/test2.html"), html, ALT_DOWNLOAD_CHARSET);*/ 			
+ 			
+ 			List<SubSearchResult> subSearchResults = new ArrayList<SubSearchResult>();
+ 			
+ 			// Iterate through lines in results table
+			Elements trResults = docSearch.select("tr[class=subtitle-entry]");
+			for (Element trResult : trResults) {
+				
+				String downloadUrl = "";
+				String attSubtitlePage = trResult.attr("data-href");
+				if (attSubtitlePage.isEmpty()) {
+					// No link present => next line
+					continue;
+				}
+				else {
+					// data-href="/subtitles/fr-the-walking-dead-2010-S06E15/Xew_"
+					downloadUrl = PODNAPISI_URL + attSubtitlePage;
 				}
 								
-				// Iterate through lines in results table
-				Elements trResults = docSearch.select("div[id=content_left] table[class=list first_column_title] tr");
-				boolean isHeader = true;
-				for (Element trResult : trResults)
-				{
-					if (isHeader) {
-						// Skip header
-						isHeader = false;
-						continue;
-					}
-					
-					Element aSubtitlePage = trResult.select("a[class=subtitle_page_link]").first();
-					String subtitleUrl = "";
-					if (aSubtitlePage != null) {
-						subtitleUrl = PODNAPISI_URL + aSubtitlePage.attr("href");
-					}
-					if (subtitleUrl.equals("")) {
-						// No link present => next line
-						continue;
-					}
-					
-					Element divFlag = trResult.select("div[class=flag]").first();
-					int flagId = -1;
-					if (divFlag != null) {
-						String aFlagHref = divFlag.parent().attr("href");
-						String[] aFlagHrefParts = aFlagHref.split("/ppodnapisi/kategorija/jezik/");
-						if (aFlagHrefParts != null && aFlagHrefParts.length > 0) {
-							flagId = Integer.parseInt(aFlagHrefParts[aFlagHrefParts.length-1]);
+				// Get the number of downloads (OPTIONAL)												
+				Element tdDownloads = trResult.select("td:eq(7)").first();
+				int episodeNbDownload = 0;
+				if (tdDownloads != null) {
+					episodeNbDownload = Integer.parseInt(tdDownloads.text());
+				}				
+				
+				// Get the episode Release (OPTIONAL)
+				Set<String> cleanedEpisodeReleases = new HashSet<String>();
+				Elements elReleases = trResult.select("span[class=release],div[class=release]");
+				for (Element elRelease : elReleases) {
+					String detectedEpisodeTitle = elRelease.text();
+					TvShowInfo releaseEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(detectedEpisodeTitle, true);
+					if (releaseEpisodeInfo != null) {
+						String cleanedReleaseGroup = releaseEpisodeInfo.getCleanedReleaseGroup();
+						if (cleanedReleaseGroup != null && !cleanedReleaseGroup.isEmpty()) {
+							cleanedEpisodeReleases.add(releaseEpisodeInfo.getCleanedReleaseGroup());
 						}
 					}
-					if (flagId == -1 || flagId != languageId) {
-						// No language present or language mismatch => next line
-						continue;
-					}
-					
-					Element spanTitle = trResult.select("div[class=list_div2]").first();
-					
-					
-					if (spanTitle != null) {
-						
-						boolean resultMatch = false;
-						String concatTitle = spanTitle.text();
-						
-						// Check if the result text : 
-						// - starts with the desired serie name
-						// => select the first one matching only
-						if (concatTitle != ""
-								&& SubLeecherHelper.looseMatchStartsWith(concatTitle, this.tvShowInfo.getSerie(), true))
-						{
-							resultMatch = true;
-						}					
-						
-						if (resultMatch) {
-							log.debug(String.format("> Matching result found : '%s'", concatTitle));
-						}
-						else {
-							// No TV Show matching found => next line
-							log.debug(String.format("> Non matching result : '%s'", concatTitle));
-							continue;
-						}					
-					}
-					else {
-						// No description present => next line
-						continue;
-					}
-					
-					// Get the episode Release (OPTIONAL)
-					String cleanedEpisodeRelease = "";
-					Element spanRelease = spanTitle.select("span[class=release]").first();
-					if (spanRelease != null) {
-						TvShowInfo releaseEpisodeInfo = TvShowInfoHelper.populateTvShowInfoFromFreeText(spanRelease.text(), true);
-						if (releaseEpisodeInfo != null) {
-							cleanedEpisodeRelease = releaseEpisodeInfo.getCleanedReleaseGroup();
-						}
-					}
-															
-					Element tdDownloads = trResult.select("td:eq(3)").first();
-					int episodeNbDownload = 0;
-					if (tdDownloads != null) {
-						// Number of downloads (OPTIONAL)
-						episodeNbDownload = Integer.parseInt(tdDownloads.text());
-					}
-					
-					subSearchResults.add(new SubSearchResult(subtitleUrl, this.subLanguage, episodeNbDownload, cleanedEpisodeRelease));
-				}	
+				}
+				if (elReleases.isEmpty()) {
+					// No release group found : add an empty one
+					cleanedEpisodeReleases.add("");
+				}
+				
+				for (String cleanedEpisodeRelease : cleanedEpisodeReleases) {				
+					subSearchResults.add(new SubSearchResult(downloadUrl, this.subLanguage, episodeNbDownload, cleanedEpisodeRelease));
+				}
 			}
 			
 			// Evaluate the matching score and sort the subtitle results !
@@ -228,71 +200,32 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 				return null;
 			}
 			
-			for (SubSearchResult scoredSub : scoredSubs)
-			{
+			// Iterate through sorted results
+			for (SubSearchResult scoredSub : scoredSubs) {
 				// ********************************************
-				// 2 - Subtitle Page
+				// 3 - Download Page
 				
-				// Connect to subtitle page
-				String subtitleUrl = scoredSub.getUrl();				
-				log.debug(String.format("Go to subtitle page at URL '%s' ...", subtitleUrl));
-				Document docSubtitle = Jsoup.connect(subtitleUrl)
-						.timeout(QUERY_TIME_OUT)
-						.header("Referer", searchUrl)
-						.get();
-				
-				Element aDownloadLink = docSubtitle.select("div[id=subtitle] a[class=button big download]").first();
-				if (aDownloadLink == null) {
-					// No download link
-					log.debug("> Download not available : no predownload link found in page");
-					continue;
-				}
-				
-				// Get the predownload  URL
-				String preDownloadLinkUrl = PODNAPISI_URL + aDownloadLink.attr("href");
-				
-				// ********************************************
-				// 3 - Pre Download Page
-				
-				// Connect to predownload link page		
-				log.debug(String.format("Go to predownload page at URL '%s' ...", preDownloadLinkUrl));
-				Document docPreDownloadUrl = Jsoup.connect(preDownloadLinkUrl)
-						.timeout(QUERY_TIME_OUT)
-						.header("Referer", subtitleUrl)
-						.get();
-				
-				Element aDownload = docPreDownloadUrl.select("div[id=content_left] div[class=content] a").first();
-				if (aDownload == null) {
-					// No download link
-					log.debug("> Download not available : no download link found in page");
-					continue;
-				}
-				
-				// Get the download URL
-				String downloadUrl = PODNAPISI_URL + aDownload.attr("href");
-				
-				
-				// ********************************************
-				// 4 - Download Page
+				String preDownloadUrl = scoredSub.getUrl();
+				String downloadUrl = preDownloadUrl + "/download";
 				
 				// Connection to download page
 				log.debug(String.format("Try to download subtitle at URL '%s' ...", downloadUrl));
 				
-				byte[] bytes = null;				
+				byte[] bytes = null;
 				try {
 					bytes = Jsoup.connect(downloadUrl)
 							.timeout(QUERY_TIME_OUT)
-							.header("Referer", subtitleUrl)
+							.header("Referer", preDownloadUrl)
 							.ignoreContentType(true)
 							.execute()
-							.bodyAsBytes();			
+							.bodyAsBytes();	
 				}
 				catch (IllegalCharsetNameException ex) {
 					// Charset not detect : try to force download with charset UTF-8
 					log.debug(String.format("> Charset not detect : try to force download with charset '%s' ...", ALT_DOWNLOAD_CHARSET));
 					URL url = new URL(downloadUrl);
 					URLConnection connection = url.openConnection();
-					connection.setRequestProperty("Referer", subtitleUrl);				
+					connection.setRequestProperty("Referer", preDownloadUrl);				
 					InputStream stream = connection.getInputStream();
 					bytes = IOUtils.toByteArray(stream);
 				}
@@ -329,6 +262,7 @@ public class SubLeecherPodnapisi extends SubLeecherBase  {
 				return new SubTitleInfo(subFileName, this.subLanguage, extraFileNames);
 			}
 
+            			
 			// No subtitle found => end
 			log.debug("No subtitle downloaded");
 			return null;

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.subzero</groupId>
 		<artifactId>subzero</artifactId>
-		<version>1.0.10-SNAPSHOT</version>
+		<version>1.1.0</version>
 	</parent>
 	<artifactId>subzero-tool</artifactId>
 	<name>subzero-tool</name>
@@ -113,6 +113,41 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>l4j-clui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<outfile>${project.build.directory}/release-files/SubZero.exe</outfile>
+							<jar>${project.build.directory}/release-files/SubZero.jar</jar>
+							<icon>${project.basedir}/src/main/resources/images/subzero.ico</icon>
+							<errTitle>${product.name}</errTitle>
+							<jre>
+								<minVersion>1.7.0</minVersion>
+							</jre>
+							<versionInfo>
+								<fileVersion>${release.file.version}</fileVersion>
+								<txtFileVersion>v${project.version}</txtFileVersion>
+								<fileDescription>${product.description}</fileDescription>
+								<copyright>${product.copyright}</copyright>
+								<productVersion>${release.file.version}</productVersion>
+								<txtProductVersion>v${project.version}</txtProductVersion>
+								<companyName>${product.author}</companyName>
+								<productName>${product.name}</productName>
+								<internalName>${product.name}</internalName>
+								<originalFilename>SubZero.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>truezip-maven-plugin</artifactId>
 				<executions>
@@ -121,7 +156,7 @@
 						<goals>
 							<goal>copy</goal>
 						</goals>
-						<phase>package</phase>
+						<phase>install</phase>
 						<configuration>
 							<fileset>
 								<directory>${project.build.directory}/release-files</directory>
@@ -129,6 +164,7 @@
 				                  <include>ReadMe.txt</include>
 				                  <include>SubZero.properties</include>
 				                  <include>SubZero.jar</include>
+				                  <include>SubZero.exe</include>
 				                </includes>
 								<outputDirectory>${project.build.directory}/release-zip/SubZero_v${project.version}.zip/SubZero</outputDirectory>
 							</fileset>

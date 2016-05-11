@@ -28,12 +28,6 @@ public class SubZeroProcessLauncher {
 	 */
 	private static Logger log = Logger.getLogger(SubZeroProcessLauncher.class);
 	
-	// Counters
-	int nbFileToProcess = 0;
-	int nbFileSuccess = 0;
-	int nbFileNoSub = 0;
-	int nbFileNoPostProcess = 0;
-	
 	/**
 	 * List of input video files to process
 	 */
@@ -57,6 +51,12 @@ public class SubZeroProcessLauncher {
 		try {					
 			log.debug("****************************************");
 			log.debug(String.format("Begin SubZero Process on working folder '%s' ...", PropertiesHelper.getWorkingFolderPath()));
+						
+			// Counters
+			int nbFileToProcess = 0;
+			int nbFileSuccess = 0;
+			int nbFileNoSub = 0;
+			int nbFileNoPostProcess = 0;
 			
 			// Get video files to process in Working Folder
 			inputVideoFileList = null;
@@ -85,7 +85,7 @@ public class SubZeroProcessLauncher {
 					
 					// 1) Check if the video file name contains a bypass keyword for the given language (e.g. .FRENCH. ; .vostfr. ; ...)
 					if (subCheckerBus.checkFilenameBypassKeyword()) {
-						// Internal subtitle found : nothing to do
+						// Bypass keyword found : nothing to do
 						log.debug(String.format("Video file '%s' (language %s) must be bypassed : nothing to do", inputVideoFile.getVideoFileName(), subLanguage));
 						fileToProcess = false;
 						fileSuccess = false;
@@ -124,7 +124,6 @@ public class SubZeroProcessLauncher {
 					if (subTitleInfo == null) {
 						// No subtitle leeched : try next language in priority order for this video file
 						log.warn(String.format("No subtitle file found for file '%s' (language %s) ! Try later...", inputVideoFile.getVideoFileName(), subLanguage));
-						nbFileNoSub++;
 						fileToProcess = true;
 						fileSuccess = false;
 						fileNoSub = true;

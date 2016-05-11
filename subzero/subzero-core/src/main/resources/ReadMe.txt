@@ -1,7 +1,7 @@
 SubZero
 =======
 Watches your TV show video files... and adds subtitle
-by ahuh (2013)
+by ahuh (2016)
 
 Version
 -------
@@ -51,18 +51,23 @@ Prerequisites
 
 How to launch
 -------------
+For all operating systems:
+
 	SubZero.jar						=> Executable JAR (double-click on it), in 'SysTray' mode
 	
-	java -jar Subzero.jar			=> Execute JAR from java command line, in 'SysTray' mode
+	java -jar SubZero.jar			=> Execute JAR from java command line, in 'SysTray' mode
 	
 	java -jar SubZero.jar d
 	OR								=> Execute JAR from java command line, in 'Daemon' mode (no GUI)
 	java -jar SubZero.jar daemon
 
+For Windows:
+
+	SubZero.exe						=> Executable (double-click on it), in 'SysTray' mode
 
 How to configure
 ----------------
-Configure 'SubZero.properties' in the same directory as 'SubZero.jar'.
+Configure 'SubZero.properties' in the same directory as 'SubZero.jar' or 'SubZero.exe'.
 See the file content for help.
 
 

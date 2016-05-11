@@ -50,6 +50,11 @@ public class SubSearchResult implements Comparable<SubSearchResult> {
 		this.release = release;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("%s ; %s ; %s ; %s", url, language, nbDownloads, release);
+	}
+	
 	/**
 	 * Compare method for List Sort : ordered by score (best to worse)
 	 */
