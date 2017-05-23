@@ -3,6 +3,10 @@ SubZero
 Watches your TV show video files... and adds subtitle
 by ahuh (2016)
 
+Version
+-------
+${project.version}
+${release.date}
 
 What is it ?
 ------------
@@ -14,7 +18,7 @@ Features :
 
 - Filename analysis with information extraction (TV show name, season, episodes, title, release group)
   from multiple patterns (see examples below)
-    
+  	
 - Support of subleecher plugins, to fetch subtitles from multiple web sites
 
 - Support of multiple languages subtitles : if it does not find subtitle for the first specified language,
@@ -48,25 +52,23 @@ Prerequisites
 How to launch
 -------------
 For all operating systems:
-* Executable JAR (double-click on it), in 'SysTray' mode
-	SubZero.jar
-* Execute JAR from java command line, in 'SysTray' mode
-	java -jar Subzero.jar		
-* Execute JAR from java command line, in 'Headless' mode (no GUI)
-	java -Dheadless -jar SubZero.jar
-* Execute JAR from java command line, using the 'SubZero.properties' located in the specified config dir
-	java -DconfigDir=path/to/dir -jar SubZero.jar
-	
-For Windows:
-* Executable (double-click on it), in 'SysTray' mode
-	SubZero.exe
 
+	SubZero.jar						=> Executable JAR (double-click on it), in 'SysTray' mode
+	
+	java -jar SubZero.jar			=> Execute JAR from java command line, in 'SysTray' mode
+	
+	java -jar SubZero.jar d
+	OR								=> Execute JAR from java command line, in 'Daemon' mode (no GUI)
+	java -jar SubZero.jar daemon
+
+For Windows:
+
+	SubZero.exe						=> Executable (double-click on it), in 'SysTray' mode
 
 How to configure
 ----------------
-At first execution, if not present the 'SubZero.properties' will be generated in the same directory as 'SubZero.jar' or 'SubZero.exe'.
-If a '-DconfigDir' is specified, this directory is used instead.
-Configure the file 'SubZero.properties' (see the file content for help).
+Configure 'SubZero.properties' in the same directory as 'SubZero.jar' or 'SubZero.exe'.
+See the file content for help.
 
 
 License
