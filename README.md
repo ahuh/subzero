@@ -49,16 +49,24 @@ How to launch
 -------------
 For all operating systems:
 * Executable JAR (double-click on it), in 'SysTray' mode
+
 	SubZero.jar
-* Execute JAR from java command line, in 'SysTray' mode
-	java -jar Subzero.jar		
-* Execute JAR from java command line, in 'Headless' mode (no GUI)
-	java -Dheadless -jar SubZero.jar
-* Execute JAR from java command line, using the 'SubZero.properties' located in the specified config dir
-	java -DconfigDir=path/to/dir -jar SubZero.jar
 	
+* Execute JAR from java command line, in 'SysTray' mode
+
+	java -jar Subzero.jar
+	
+* Execute JAR from java command line, in 'Headless' mode (no GUI)
+
+	java -Dheadless -jar SubZero.jar
+	
+* Execute JAR from java command line, using the 'SubZero.properties' located in the specified config dir
+
+	java -DconfigDir=path/to/dir -jar SubZero.jar
+		
 For Windows:
 * Executable (double-click on it), in 'SysTray' mode
+
 	SubZero.exe
 
 
