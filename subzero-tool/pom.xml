@@ -132,11 +132,11 @@
 								<minVersion>1.7.0</minVersion>
 							</jre>
 							<versionInfo>
-								<fileVersion>${release.file.version}</fileVersion>
+								<fileVersion>${release.file.version}.0</fileVersion>
 								<txtFileVersion>v${project.version}</txtFileVersion>
 								<fileDescription>${product.description}</fileDescription>
 								<copyright>${product.copyright}</copyright>
-								<productVersion>${release.file.version}</productVersion>
+								<productVersion>${release.file.version}.0</productVersion>
 								<txtProductVersion>v${project.version}</txtProductVersion>
 								<companyName>${product.author}</companyName>
 								<productName>${product.name}</productName>

@@ -10,13 +10,13 @@
 	<packaging>pom</packaging>
 	
 	<properties>
-		<release.date>2016-05-11</release.date>
-		<!-- Release file version : format x.x.x.x required-->
-		<release.file.version>1.1.1.0</release.file.version>
+		<release.date>2017-05-23</release.date>
+		<!-- Release file version : format x.x.x required for-->
+		<release.file.version>1.1.1</release.file.version>
 		
 		<product.name>SubZero</product.name>
 		<product.author>ahuh</product.author>
-		<product.copyright>(c) 2016 ahuh</product.copyright>
+		<product.copyright>(c) 2017 ahuh</product.copyright>
 		<product.description>Watches your TV show video files... and adds subtitle</product.description>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
