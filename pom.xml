@@ -10,7 +10,7 @@
 	<packaging>pom</packaging>
 	
 	<properties>
-		<release.date>2017-05-23</release.date>
+		<release.date>2017-05-25</release.date>
 		<!-- Release file version : format x.x.x required for-->
 		<release.file.version>1.1.2</release.file.version>
 		
