@@ -70,7 +70,7 @@ public class FileHelper {
 	 */
 	public static List<String> getVideoFiles(String workingFolderPath) throws Exception {
 		// Get files in folder
-		log.debug(String.format("Get files in folder '%s'", workingFolderPath));
+		log.trace(String.format("Get files in folder '%s'", workingFolderPath));
 		List<String> videoFileNameList = new ArrayList<String>();
 
 		File folder = getExistingFolder(workingFolderPath);
@@ -79,7 +79,7 @@ public class FileHelper {
 		}
 
 		File[] listOfFiles = folder.listFiles();
-		log.debug(String.format("Number of items in folder : %d", listOfFiles.length));
+		log.trace(String.format("Number of items in folder : %d", listOfFiles.length));
 
 		for (File file : listOfFiles) {
 			if (file.isFile()) {
@@ -89,12 +89,12 @@ public class FileHelper {
 
 				TvShowInfo tvShowInfo = TvShowInfoHelper.populateTvShowInfo(fileName, true);
 				if (tvShowInfo == null) {
-					log.debug(String.format("File '%s' is not a tv show : skipping", fileName));
+					log.trace(String.format("File '%s' is not a tv show : skipping", fileName));
 				} else {
 					// File is a video TV show file
 					if (checkVideoFileMinimumSize(file)) {
 						// File has the required minimum size
-						log.debug(String.format("Add file '%s' to the list to process", fileName));
+						log.trace(String.format("Add file '%s' to the list to process", fileName));
 						videoFileNameList.add(fileName);
 					}
 				}
@@ -114,7 +114,7 @@ public class FileHelper {
 	 */
 	public static List<String> getSubFoldersToProcess(String workingFolderPath) throws Exception {
 		// Get files in folder
-		log.debug(String.format("Get files in folder '%s'", workingFolderPath));
+		log.trace(String.format("Get files in folder '%s'", workingFolderPath));
 		List<String> folderNameList = new ArrayList<String>();
 
 		File folder = getExistingFolder(workingFolderPath);
@@ -123,7 +123,7 @@ public class FileHelper {
 		}
 
 		File[] listOfFiles = folder.listFiles();
-		log.debug(String.format("Number of items in folder : %d", listOfFiles.length));
+		log.trace(String.format("Number of items in folder : %d", listOfFiles.length));
 
 		for (File file : listOfFiles) {
 			if (file.isDirectory()) {
@@ -134,13 +134,13 @@ public class FileHelper {
 				boolean exclude = false;
 				for (String excludeName : PropertiesHelper.getWorkingFolderExcludes()) {
 					if (folderName.toLowerCase().equals(excludeName.toLowerCase())) {
-						log.debug(String.format("Folder '%s' is in the excluded folder list : skipping", folderName));
+						log.trace(String.format("Folder '%s' is in the excluded folder list : skipping", folderName));
 						exclude = true;
 					}
 				}
 
 				if (!exclude) {
-					log.debug(String.format("Add folder '%s' to the list to process", folderName));
+					log.trace(String.format("Add folder '%s' to the list to process", folderName));
 					folderNameList.add(folderName);
 				}
 			}

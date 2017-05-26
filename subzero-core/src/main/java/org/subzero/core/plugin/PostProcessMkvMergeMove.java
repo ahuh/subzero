@@ -107,8 +107,6 @@ public class PostProcessMkvMergeMove extends PostProcessBase {
     			}
             }
             
-            //TODO:corriger bug : il faut changer extension en mkv dans tous les cas (output folder vide ou pas)
-            
             log.info(String.format("Post-Process MkvMerge & Move succeeded for file '%s'", outputFilePath));
             
             return true;

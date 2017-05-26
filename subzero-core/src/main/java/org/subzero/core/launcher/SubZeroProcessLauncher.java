@@ -212,16 +212,16 @@ public class SubZeroProcessLauncher {
 		
 		// Populate with video files in current folder 
 		for (String fileName : FileHelper.getVideoFiles(workingFolderPath)) {
-			log.debug(String.format("Add video file '%s' to the list to process", fileName));
+			log.trace(String.format("Add video file '%s' to the list to process", fileName));
 			inputVideoFileList.add(new VideoFileToProcess(fileName, workingFolderPath));
 		}
 		
 		// Recursive mode : populate with video files in subfolders
 		if (PropertiesHelper.getWorkingFolderRecursiveMode()) {		
-			log.debug(String.format("Recursive mode: explore items in folder '%s'", workingFolderPath));
+			log.trace(String.format("Recursive mode: explore items in folder '%s'", workingFolderPath));
 			for (String folderName : FileHelper.getSubFoldersToProcess(workingFolderPath)) {
 				String folderPath = workingFolderPath + FileHelper.FILE_SEPARATOR + folderName;
-				log.debug(String.format("Populate video file list for folder '%s'", folderPath));
+				log.trace(String.format("Populate video file list for folder '%s'", folderPath));
 				populateVideoFileList(folderPath);
 			}			
 		}		

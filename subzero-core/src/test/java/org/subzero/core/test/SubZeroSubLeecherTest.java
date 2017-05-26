@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.subzero.core.bean.SubTitleInfo;
 import org.subzero.core.bean.TvShowInfo;
@@ -28,7 +29,8 @@ public class SubZeroSubLeecherTest {
 		PropertiesHelper.configureLogger();
 	}
 	
-	//@Test
+	@Test
+	@Ignore
 	public void testSubLeecherAddicted() throws Exception
 	{
 		String[] tests = {	"doctor.who.2005.s09e01.hdtv.x264-tla.mp4",

@@ -1,17 +1,12 @@
 package org.subzero.core.test;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.subzero.core.helper.PropertiesHelper;
 import org.subzero.core.launcher.SubZeroProcessLauncher;
 
 public class SubZeroFullProcessTest {
-	
-	/**
-	 * Logger
-	 */
-	private static Logger log = Logger.getLogger(SubZeroFullProcessTest.class);
 
 	@Before
 	public void init()
@@ -20,7 +15,8 @@ public class SubZeroFullProcessTest {
 		PropertiesHelper.configureLogger();
 	}
 	
-	//@Test
+	@Test
+	@Ignore
 	public void testFullProcess() throws Exception
 	{
 		SubZeroProcessLauncher launcher = new SubZeroProcessLauncher();
